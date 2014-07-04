@@ -1,9 +1,7 @@
 # Controller Tester
 *Copyright 2014 Alvin Stanescu, Software Engineering Chair @ Technische Universitaet Munchen*
 
-<p align="center">
-![Technische Universitaet Muenchen](/WPFGUI/Resources/TUM.png)
-</p>
+->![Technische Universitaet Muenchen](/WPFGUI/Resources/TUM.png)<-
 
 
 Licensed under the Apache License, Version 2.0 (the "License");
