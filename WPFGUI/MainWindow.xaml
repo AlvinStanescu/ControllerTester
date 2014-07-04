@@ -1,0 +1,151 @@
+﻿<Controls:MetroWindow x:Class="FM4CC.WPFGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:resx="clr-namespace:FM4CC.WPFGUI.Properties"
+        Style="{DynamicResource ControllerTesterStyle}" 
+        Title="Controller Tester" 
+        Height="500" 
+        Width="800" 
+        WindowStartupLocation="CenterScreen"
+        MinWidth="525"
+        MinHeight="500" 
+        Loaded="MetroWindow_Loaded"
+        BorderThickness="1"
+        >
+
+    <Controls:MetroWindow.WindowCommands>
+        <Controls:WindowCommands>
+            <Button Click="Settings_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="20" Height="20"
+                   Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill">
+                                <VisualBrush.Visual>
+                                    <Canvas Width="76" Height="76" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                                        <Path Width="38.9239" Height="38.9239" Canvas.Left="18.538" Canvas.Top="18.5381" Stretch="Fill" Fill="{DynamicResource BlackBrush}" Data="F1 M 38,23.5C 38.8643,23.5 39.7109,23.5756 40.5337,23.7206L 42.6275,18.5381L 48.1901,20.787L 46.0964,25.9692C 47.6473,27.0149 48.9851,28.3527 50.0308,29.9036L 55.213,27.8099L 57.4619,33.3725L 52.2794,35.4664C 52.4244,36.2891 52.5,37.1357 52.5,38C 52.5,38.8643 52.4244,39.7109 52.2794,40.5337L 57.4619,42.6275L 55.213,48.1901L 50.0308,46.0964C 49.0795,47.5073 47.8865,48.7418 46.5112,49.7405L 48.7844,54.8462L 43.3041,57.2891L 41.0307,52.1828C 40.0533,52.3906 39.0394,52.5 38,52.5C 37.1357,52.5 36.2891,52.4244 35.4664,52.2794L 33.3725,57.462L 27.8099,55.213L 29.9036,50.0309C 28.3527,48.9851 27.0149,47.6473 25.9691,46.0964L 20.787,48.1901L 18.538,42.6275L 23.7206,40.5336C 23.5756,39.7109 23.5,38.8643 23.5,38C 23.5,37.1357 23.5756,36.2891 23.7206,35.4664L 18.538,33.3725L 20.787,27.8099L 25.9691,29.9036C 26.9205,28.4927 28.1135,27.2582 29.4889,26.2594L 27.2157,21.1537L 32.6959,18.7109L 34.9694,23.8172C 35.9468,23.6094 36.9606,23.5 38,23.5 Z M 38,28C 32.4771,28 28,32.4772 28,38C 28,43.5229 32.4771,48 38,48C 43.5228,48 48,43.5229 48,38C 48,32.4772 43.5228,28 38,28 Z "/>
+                                    </Canvas>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock Margin="4 0 4 0"
+                   VerticalAlignment="Center"
+                   Text="settings" Foreground="White"/>
+                </StackPanel>
+            </Button>
+            <Button Click="About_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="15" Height="20"
+                   Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill">
+                            <VisualBrush.Visual>
+                                <Canvas Width="76" Height="76" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                                    <Path Width="25.3333" Height="39.5833" Canvas.Left="25.3333" Canvas.Top="17.4167" Stretch="Fill" Fill="{DynamicResource BlackBrush}" Data="F1 M 37.2083,49.0833C 39.3945,49.0833 41.1667,50.8555 41.1667,53.0417C 41.1667,55.2278 39.3945,57 37.2083,57C 35.0222,57 33.25,55.2278 33.25,53.0417C 33.25,50.8555 35.0222,49.0833 37.2083,49.0833 Z M 38,17.4167C 44.9956,17.4167 50.6666,21.9416 50.6666,28.5C 50.6666,30.875 49.0833,34.8333 45.9167,36.4167C 42.75,38 41.1667,40.1267 41.1667,42.75L 41.1667,45.9167L 33.25,45.9167L 33.25,43.5417C 33.25,38.1571 38,34.8333 39.5833,33.25C 42.75,30.0833 42.75,29.644 42.75,28.5C 42.75,25.8767 40.6233,23.75 38,23.75C 35.3766,23.75 33.25,25.8767 33.25,28.5L 33.25,30.875L 25.3333,30.875L 25.3333,29.2917C 25.3333,22.7333 31.0044,17.4167 38,17.4167 Z "/>
+                                </Canvas>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+                <TextBlock Margin="4 0 0 0"
+                   VerticalAlignment="Center"
+                   Text="about" Foreground="White"/>
+                </StackPanel>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.WindowCommands>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="250*"/>
+            <ColumnDefinition Width="80*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="130"/>
+            <RowDefinition Height="220*"/>
+            <RowDefinition Height="100*"/>
+        </Grid.RowDefinitions>
+        
+        <Ribbon x:Name="Ribbon"  
+                SelectedIndex="0" 
+                Background="White"
+                Margin="0 -20 0 0" 
+                Grid.ColumnSpan="4" 
+                TextBlock.FontStretch="Condensed"
+                TextBlock.FontFamily="Segoe UI"
+                TextBlock.FontSize="12"
+                TextOptions.TextRenderingMode="ClearType"
+                LayoutUpdated="Ribbon_LayoutUpdated"
+                >
+
+            <!-- Quick Access Toolbar - located at the upper-left corner -->
+            <!-- Application Menu, located at the left-hand side (down arrow) -->
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu KeyTip="F" Background="#195791"  Label="FILE" BorderBrush="Azure">
+                    <RibbonApplicationMenuItem Header="New Project..." ImageSource="Resources\Icons\new_project.png" Click="NewTestProject_Click"/>
+                    <RibbonApplicationMenuItem Header="Open Project..." ImageSource="Resources\Icons\open_project.png" Click="OpenTestProject_Click"  />
+                    <RibbonApplicationMenuItem IsEnabled="False" x:Name="SaveProjectMenuItem" Header="Save Project..." ImageSource="Resources\Icons\save_project.png" Click="SaveTestProject_Click" />
+                    <RibbonApplicationMenuItem IsEnabled="False" x:Name="CloseProjectMenuItem" Header="Close Project" ImageSource="Resources\Icons\exit.png" Click="CloseTestProject_Click" />
+                    <RibbonApplicationMenuItem Header="Preferences" ImageSource="Resources\Icons\settings.png" Click="Settings_Click" />
+                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Resources\Icons\exit.png" Click="Exit_Click" />
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+            <!-- Ribbon Tab #1: Home -->
+            <RibbonTab Header="HOME" KeyTip="H" >
+                <!-- Test Case Generation  group-->
+                <RibbonGroup Name="SimulationGroup" Header="Simulation" IsEnabled="False">
+                    <RibbonButton LargeImageSource="Resources\Icons\configuration.png" Label="Simulation settings" Click="ChangeSimulationSettings_Clicked"></RibbonButton>
+                    <RibbonButton LargeImageSource="Resources\Icons\simulate.png" Label="Manual Simulation" KeyTip="S" Click="Simulate_Clicked" />
+                </RibbonGroup>
+
+                <!-- Test Case Generation  group-->
+                <RibbonGroup Name="TestCaseGenerationGroup" Header="Test Case Generation" IsEnabled="False" >
+                    <RibbonButton LargeImageSource="Resources\Icons\generate.png" Label="Generate" KeyTip="G" Click="Generate_Clicked"/>
+                    <RibbonButton LargeImageSource="Resources\Icons\clean.png" Label="Clean" KeyTip="C" Click="Clean_Clicked" IsEnabled="False"/>
+                </RibbonGroup>
+
+                <!-- Test Case Execution group-->
+                <RibbonGroup Name="TestCaseExecutionGroup" Header="Test Case Execution" IsEnabled="False" Width="300">
+                    <RibbonButton LargeImageSource="Resources\Icons\run.png" Label="Execute" KeyTip="X" Click="Execute_Clicked" />
+                    <ComboBox x:Name="ComboBoxTestCases" ItemsSource="{Binding}" Width="230" SelectionChanged="cbTestCases_SelectionChanged"></ComboBox>
+                </RibbonGroup>
+
+                <!-- Test Case Info group-->
+                <RibbonGroup Name="TestCaseInfoGroup" Header="Test Case Information" IsEnabled="False">
+                    <RibbonTwoLineText x:Name="TestCaseInfoText"></RibbonTwoLineText>
+                </RibbonGroup>
+            </RibbonTab>
+            <RibbonTab Header="INSTRUMENTS" KeyTip="I">
+                <RibbonGroup Name="ToolsRibbonGroup" Header="Tools" IsEnabled="True">
+                    <RibbonButton LargeImageSource="Resources\Icons\matlab.ico" Label="Run MATLAB" Click="RunMATLAB_Click"/>    
+                    <RibbonCheckBox Label="Show Console" Click="ShowConsole_Click"></RibbonCheckBox>
+                </RibbonGroup>
+            </RibbonTab>
+        </Ribbon>
+        <GroupBox Grid.Row="1" Name="FaultModelsGroupBox" Header="Fault Models">
+            <StackPanel Orientation="Vertical" x:Name="FaultModelsStackPanel" VerticalAlignment="Center">
+                <ListView Visibility="Hidden" Name="FaultModelsListView" BorderThickness="0" SelectionChanged="FaultModelsListView_SelectionChanged" />
+                <TextBlock Name="FaultModelPlaceholderTextBlock"  Foreground="Gray" Height="34" HorizontalAlignment="Center">Please create or load a project</TextBlock>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="1" Name="ConfigurationGroupBox" Header="Configuration">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" x:Name="ConfigurationScrollViewer">
+                <StackPanel Orientation="Vertical" x:Name="ConfigurationStackPanel" VerticalAlignment="Center">
+                    <TextBlock Name="ConfigurationPlaceholderTextBlock" Foreground="Gray" Height="34" HorizontalAlignment="Center">Please create or load a project to begin</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Name="FaultModelDescriptionGroupBox" Header="Description">
+            <Grid>
+                <TextBlock TextAlignment="Justify" Margin="5,5,5,5" FontSize="14" TextWrapping="Wrap"  ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="FaultModelDescriptionTextBox"/>
+                <Image Source="Resources\TUM.png" Opacity="0.35" VerticalAlignment="Bottom" Height="Auto" Width="80" HorizontalAlignment="Right" Margin="20,20,15,15"></Image>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Name="ConsoleGroupBox" Header="Console" Grid.ColumnSpan="2">
+            <TextBox TextWrapping="Wrap"  AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="ConsoleTextBox"/>
+        </GroupBox>
+    </Grid>
+</Controls:MetroWindow>

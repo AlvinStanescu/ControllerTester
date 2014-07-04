@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <LinearGradientBrush x:Key="HeatGradient">
+        <GradientStop Color="#000000" Offset="1.00000" />
+        <!-- Cooler -->
+        <GradientStop Color="#F82600" Offset="0.88888" />
+        <GradientStop Color="#FC7700" Offset="0.77777" />
+        <GradientStop Color="#FFAB1F" Offset="0.66666" />
+        <GradientStop Color="#FFC360" Offset="0.55555" />
+        <GradientStop Color="#FFDDA4" Offset="0.44444" />
+        <GradientStop Color="#FFF4E4" Offset="0.33333" />
+        <GradientStop Color="#E8EDFF" Offset="0.22222" />
+        <GradientStop Color="#DBE3FF" Offset="0.11111" />
+        <GradientStop Color="#CBD7FF" Offset="0.00000" />
+        <!-- Hotter -->
+    </LinearGradientBrush>
+    <VisualBrush x:Key="PaletteBrush">
+        <VisualBrush.Visual>
+            <Rectangle Width="256" Height="1" Fill="{StaticResource HeatGradient}" />
+        </VisualBrush.Visual>
+    </VisualBrush>
+</ResourceDictionary>

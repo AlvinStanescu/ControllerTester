@@ -1,0 +1,19 @@
+   Controller Tester
+   Copyright 2014 Alvin Stanescu, Software Engineering Chair / I22 @ Technische Universitaet Muenchen
+
+   This product is based on the work 
+   "Automated Model-in-the-Loop Testing of Continuous Controllers Using Search" 
+   by Reza Matinnejad, Shiva Nejati, Lionel C. Briand, Thomas Bruckmann and Claude Poull.
+   A digital copy is available from http://dx.doi.org/10.1007/978-3-642-39742-4_12.
+
+   This software was developed during a master's thesis 
+   supervised by Dominik Holling at the Software Engineering 
+   chair of TUM headed by Alexander Pretschner.
+
+   This software uses the .NET Framework Version 4.5 by Microsoft 
+   and Matlab Versions 2011/2012/2013/2014 by Mathworks. 
+   These products need to be installed and licenced separately.
+
+   The icons used in this software are entypo pictograms 
+   by Daniel Bruce available at www.entypo.com 
+   under CC BY-SA 3.0 license

@@ -1,0 +1,33 @@
+﻿<Controls:MetroWindow x:Class="FM4CC.FaultModels.Step.GUI.RunWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" Title="Step Fault Model Simulation">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200*"></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
+        </Grid.RowDefinitions>
+        <GroupBox Header="Desired value settings">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="60"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition Width="120*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Initial Desired Value</Label>
+                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Final Desired Value</Label>
+                <Controls:NumericUpDown Margin="5,0,5,0" Grid.Row="0" Grid.Column="1" x:Name="InitialValueNumUpDown" VerticalAlignment="Center" Value="0"></Controls:NumericUpDown>
+                <Controls:NumericUpDown Margin="5,0,5,0" Grid.Row="1" Grid.Column="1" x:Name="FinalValueNumUpDown" VerticalAlignment="Center" Value="0"></Controls:NumericUpDown>
+            </Grid>
+        </GroupBox>
+        <Button Margin="0,0,10,0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Click" Height="40" Width="80">Run</Button>
+    </Grid>
+</Controls:MetroWindow>

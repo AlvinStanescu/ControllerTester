@@ -1,0 +1,89 @@
+﻿<Controls:MetroWindow x:Class="FM4CC.WPFGUI.AboutBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    Title="About the Controller Tester" x:Uid="idAboutBox"
+    Style="{DynamicResource AboutDialogStyle}" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <Image x:Key="aboutLogo" Source="..\Resources\TUM.png" Width="80" HorizontalAlignment="Right" Margin="20,20,20,10" />
+        <Image x:Key="aboutLogo2" Source="..\Resources\TUM_MI.png" Width="70" Height="65" HorizontalAlignment="Right" Margin="0,10,20,10" />
+        <Style x:Key="AboutDialogStyle" TargetType="Window">
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="Width" Value="600" />
+            <Setter Property="ShowInTaskbar" Value="False" />
+            <Setter Property="ResizeMode" Value="NoResize" />
+            <Setter Property="WindowStyle" Value="SingleBorderWindow" />
+            <Setter Property="SizeToContent" Value="Height" />
+        </Style>
+        <Style x:Key="DisplayAreaStyle" TargetType="{x:Type StackPanel}">
+            <Setter Property="Margin" Value="10,10,10,5" />
+        </Style>
+        <Style x:Key="BackgroundStyle" TargetType="{x:Type StackPanel}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0,1">
+                        <GradientStop Offset="0.55" Color="White" />
+                        <GradientStop Offset="0.85" Color="White" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style x:Key="ParagraphSeparator" TargetType="{x:Type Label}">
+            <Setter Property="Padding" Value="0,10,0,0" />
+        </Style>
+        <Style x:Key="LinkLabelStyle">
+            <Setter Property="Control.Padding" Value="0" />
+            <Setter Property="Control.VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="ReadOnlyDescStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="MinLines" Value="6" />
+            <Setter Property="MaxLines" Value="6" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+        </Style>
+        <Style x:Key="OkButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="MinWidth" Value="75" />
+            <Setter Property="Margin" Value="0,5" />
+            <Setter Property="DockPanel.Dock" Value="Right" />
+            <Setter Property="IsDefault" Value="True" />
+            <Setter Property="IsCancel" Value="True" />
+        </Style>
+    </Window.Resources>
+    <StackPanel x:Uid="clientArea" Style="{StaticResource BackgroundStyle}">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <StaticResource ResourceKey="aboutLogo" />
+            <StaticResource ResourceKey="aboutLogo2" />
+        </StackPanel>
+        <StackPanel x:Uid="displayArea" Style="{StaticResource DisplayAreaStyle}" 
+                    x:Name="DisplayPanel">
+            <Label x:Name="productName" x:Uid="productName" Content="{Binding Mode=OneTime, Path=Product}" />
+            <StackPanel x:Uid="versionArea" Orientation="Horizontal">
+                <Label x:Name="versionLabel" x:Uid="VersionLabel" Content="Version - " />
+                <Label x:Name="version" x:Uid="version" Content="{Binding Mode=OneTime, Path=Version}" />
+            </StackPanel>
+            <Label x:Name="copyright" x:Uid="copyright" Content="{Binding Mode=OneTime, Path=Copyright}"  />
+            <Label x:Name="company" x:Uid="company" Content="{Binding Mode=OneTime, Path=Company}" />
+            <Label x:Name="reserved" x:Uid="reserved" Content="All Rights Reserved." />
+            <Label x:Name="info" x:Uid="info" Style="{StaticResource ParagraphSeparator}" 
+                   Content="Product details:" />
+            <TextBox x:Name="description" x:Uid="description" Text="{Binding Mode=OneTime, Path=Description}"
+                     Style="{StaticResource ReadOnlyDescStyle}" />
+            <DockPanel x:Uid="buttonArea">
+                <Button x:Name="okButton" x:Uid="okButton" Style="{StaticResource OkButtonStyle}" 
+                        Content="OK" />
+                <Label x:Name="productLink" x:Uid="productLink" Style="{StaticResource LinkLabelStyle}" >
+                    <Hyperlink x:Name="hyperlink" x:Uid="hyperlink" NavigateUri="{Binding Mode=OneTime, Path=LinkUri}"  Style="{StaticResource LinkLabelStyle}"
+                               Hyperlink.RequestNavigate="hyperlink_RequestNavigate">
+                        <TextBlock Text="{Binding Mode=OneTime, Path=LinkText}" />
+                    </Hyperlink>
+                </Label>
+            </DockPanel>
+        </StackPanel>
+    </StackPanel>
+</Controls:MetroWindow>
+
+    

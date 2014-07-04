@@ -1,0 +1,11 @@
+﻿<Controls:MetroWindow x:Class="FM4CC.Util.ProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="ProgressWindow" Height="143.571" Width="495" Loaded="Window_Loaded">
+
+    <Grid>
+        <TextBlock HorizontalAlignment="Center" Margin="44,10,43,69" Width="400" x:Name="ProgressTextBlock"></TextBlock>
+        <Controls:MetroProgressBar HorizontalAlignment="Center" Width="400" Height="30" Margin="44,58,43,25" x:Name="ProgressBar"></Controls:MetroProgressBar>
+    </Grid>
+</Controls:MetroWindow>

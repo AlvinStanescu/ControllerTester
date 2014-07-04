@@ -1,0 +1,17 @@
+﻿<Controls:MetroWindow x:Class="FM4CC.WPFGUI.NewProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:local="clr-namespace:FM4CC.WPFGUI"
+        Style="{DynamicResource ControllerTesterStyle}" 
+        Title="New test project" Height="600" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" MinHeight="250" MinWidth="300" Closing="MetroWindow_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="220*"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <StackPanel VerticalAlignment="Center" Margin="20 0 20 0" Grid.Row="0" DataContext="{Binding Path=DataContext}" x:Name="controlContainer"></StackPanel>
+        <Button Content="Next" Margin="0 0 10 0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Grid.Row="1" Click="NextButton_Click"/>
+    </Grid>
+</Controls:MetroWindow>
