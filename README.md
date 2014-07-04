@@ -49,4 +49,4 @@ The particularity of this fault model is that the input signal, the controller's
 The objective functions of each requirement are computed based on the controller's actual value signal after the final desired value is input to it. The intermediate outcome of the test case generation process is a heatmap indicating possible problematic regions in the 2-D input space. The user can choose the regions he wants to investigate further. The final outcome of our test case generation is a worst case test scenario for a particular requirement in a certain region.
 
 ## Further development
-The tool is designed to be easily extendible with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
+The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
