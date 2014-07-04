@@ -34,6 +34,8 @@ The Controller Tester can manage test projects and is able to use MATLAB Simulin
 
 More information is available at: http://www.mathworks.com/help/matlab/call-matlab-com-automation-server.html
 
+**Use a *From Workspace* block for the Desired variable and a *To Workspace* block to export the Actual variable (as Structure or Structure With Time)**
+
 The currently implemented fault models are:
 
 ### The Step Fault Model
