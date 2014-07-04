@@ -16,7 +16,7 @@ limitations under the License.
 This software is provided with no liability whatsoever and is an Alpha version, therefore **use AT YOUR OWN RISK!**
 
 This software is based on the work *"Automated Model-in-the-Loop Testing of Continuous Controllers Using Search"*
-by *Reza Matinnejad, Shiva Nejati, Lionel C. Briand, Thomas Bruckmann and Claude Poull.*
+by *Reza Matinnejad, Shiva Nejati, Lionel C. Briand, Thomas Bruckmann and Claude Poull.*, published in *Search Based Software Engineering Lecture Notes in Computer Science Volume 8084, 2013, pp 141-157*.
 A digital copy is available from http://dx.doi.org/10.1007/978-3-642-39742-4_12.
 
 ## Requirements
