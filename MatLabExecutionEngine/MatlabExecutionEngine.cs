@@ -16,7 +16,7 @@ namespace FM4CC.ExecutionEngine.Matlab
     {
         private MatlabProcessContainer matlabProcess;
         private bool owningProcess;
-        private WeakReference<MLApp.MLApp> matlabApp;
+        private WeakReference<Object> matlabApp;
         private System.Threading.EventWaitHandle eventWaitHandle;
         private GCHandle rcwHandle;
 
@@ -58,9 +58,9 @@ namespace FM4CC.ExecutionEngine.Matlab
         {
             if (owningProcess)
             {
-                MLApp.MLApp app;
+                object app;
                 matlabApp.TryGetTarget(out app);
-                app.PutWorkspaceData(name, "base", data);
+                app.GetType().InvokeMember("PutWorkspaceData", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { name, "base", data });                    
             }
             else
             {
@@ -73,9 +73,9 @@ namespace FM4CC.ExecutionEngine.Matlab
         {
             if (owningProcess)
             {
-                MLApp.MLApp app;
+                object app;
                 matlabApp.TryGetTarget(out app);
-                return app.GetVariable(name, "base");
+                return app.GetType().InvokeMember("GetVariable", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { name, "base" });
             }
             else
             {
@@ -87,9 +87,9 @@ namespace FM4CC.ExecutionEngine.Matlab
         {
             if (owningProcess)
             {
-                MLApp.MLApp app;
+                object app;
                 matlabApp.TryGetTarget(out app);
-                return app.Execute(command);
+                return (string)app.GetType().InvokeMember("Execute", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { command });
             }
             else
             {
@@ -102,9 +102,9 @@ namespace FM4CC.ExecutionEngine.Matlab
         {
             if (owningProcess)
             {
-                MLApp.MLApp app;
+                object app;
                 matlabApp.TryGetTarget(out app);
-                return app.Execute("plot(" + name + ")");
+                return (string)app.GetType().InvokeMember("Execute", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { "plot(" + name + ")" });
             }
             else
             {
@@ -117,9 +117,9 @@ namespace FM4CC.ExecutionEngine.Matlab
         {
             if (owningProcess)
             {
-                MLApp.MLApp app;
+                object app;
                 matlabApp.TryGetTarget(out app);
-                return app.Execute("cd('" + fullPath + "')");
+                return (string)app.GetType().InvokeMember("Execute", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { "cd('" + fullPath + "')" });
             }
             else
             {
@@ -188,12 +188,12 @@ namespace FM4CC.ExecutionEngine.Matlab
             }
             try
             {
-                matlabApp = new WeakReference<MLApp.MLApp>(matlabProcess.GetProcess(this).MatLabInstance);
+                matlabApp = new WeakReference<object>(matlabProcess.GetProcess(this).MatLabInstance);
             }
             catch (COMException)
             {
                 matlabProcess.RequestProcessRestart(this);
-                matlabApp = new WeakReference<MLApp.MLApp>(matlabProcess.GetProcess(this).MatLabInstance);
+                matlabApp = new WeakReference<object>(matlabProcess.GetProcess(this).MatLabInstance);
             }
             owningProcess = true;
         }

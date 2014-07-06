@@ -11,7 +11,7 @@ namespace FM4CC.ExecutionEngine.Matlab.Process
 {
     public class MatlabApplicationProcess : ApplicationProcess
     {
-        public MLApp.MLApp MatLabInstance
+        public Object MatLabInstance
         {
             get;
             private set;
@@ -26,7 +26,7 @@ namespace FM4CC.ExecutionEngine.Matlab.Process
         {
             if (MatLabInstance == null)
             {
-                MatLabInstance = new MLApp.MLApp();
+                MatLabInstance = Activator.CreateInstance(Type.GetTypeFromProgID("MATLAB.Application"));
             }
         }
 
@@ -36,7 +36,7 @@ namespace FM4CC.ExecutionEngine.Matlab.Process
             {
                 try
                 {
-                    MatLabInstance.Quit();
+                    MatLabInstance.GetType().InvokeMember("Quit", BindingFlags.InvokeMethod, null, MatLabInstance, null);
                 }
                 catch (COMException)
                 {
