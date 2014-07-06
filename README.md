@@ -53,3 +53,6 @@ The objective functions of each requirement are computed based on the controller
 
 ## Further development
 The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
+
+## Known issues
+* When moving a project from a computer to another and using the project the model should be built before, since the MATLAB COM Automation Server fails at building the model. For this purpose please create a new project on the new PC, since it contains a workaround for building the accelerated model.
