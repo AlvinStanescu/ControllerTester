@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,14 +23,29 @@ namespace FM4CC.WPFGUI.Configuration
     internal partial class SettingsWindow : MetroWindow
     {
         private FMTesterConfiguration config;
+        public List<MatlabInstallation> MatlabInstallations { get; set; }
 
-        internal SettingsWindow(FMTesterConfiguration configuration)
+        internal SettingsWindow(FMTesterConfiguration configuration, bool canDiscard)
         {
             InitializeComponent();
+
+            if (canDiscard)
+            {
+                DiscardButton.IsEnabled = true;
+            }
+            else
+            {
+                this.ShowCloseButton = false;
+                this.ShowMaxRestoreButton = false;
+                this.ShowMinButton = false;
+            }
+
+            if (configuration == null) configuration = new FMTesterConfiguration();
             this.config = configuration;
             this.MatlabPathTextBox.Text = config.MatLABFolderPath;
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
-
+            List<MatlabInstallation> installs = MatlabInstallation.GetMatlabInstallations();
+            InstallationsListBox.ItemsSource = installs;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -64,5 +80,18 @@ namespace FM4CC.WPFGUI.Configuration
             fbd.ShowDialog();
             this.MatlabPathTextBox.Text = fbd.SelectedPath;
         }
+        
+        private void InstallationsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MatlabPathTextBox.Text = (e.AddedItems[0] as MatlabInstallation).MatlabPath;
+        }
+
+        private void InstallationsListBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            if (InstallationsListBox.SelectedItem != null)
+            {
+                MatlabPathTextBox.Text = (InstallationsListBox.SelectedItem as MatlabInstallation).MatlabPath;
+            }
+        }                
     }
 }

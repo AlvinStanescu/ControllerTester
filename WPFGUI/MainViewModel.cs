@@ -55,8 +55,19 @@ namespace FM4CC.WPFGUI
             connectedListViewItem = new Dictionary<FaultModel, ListViewItem>();
 
             mainWindow.Closing += mainWindow_Closing;
+            mainWindow.Loaded += mainWindow_Loaded;
             selectedExecutionEngines = new List<ExecutionEnvironment>();
+            
+        }
+
+        void mainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             appConfiguration = FMTesterConfiguration.LoadSettings(Constants.SettingsFilePath);
+            if (appConfiguration == null)
+            {
+                ShowSettingsWindow(false);
+                appConfiguration = FMTesterConfiguration.LoadSettings(Constants.SettingsFilePath);
+            }   
         }
 
         private void LoadAssemblies()
@@ -345,9 +356,9 @@ namespace FM4CC.WPFGUI
 
         #region Settings
 
-        public void ShowSettingsWindow()
+        public void ShowSettingsWindow(bool canDiscard = true)
         {
-            SettingsWindow settingsWindow = new SettingsWindow(appConfiguration);
+            SettingsWindow settingsWindow = new SettingsWindow(appConfiguration, canDiscard);
             settingsWindow.ShowDialog(this.mainWindow);
         }
 

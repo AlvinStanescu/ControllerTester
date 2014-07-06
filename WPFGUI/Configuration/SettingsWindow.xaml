@@ -7,7 +7,7 @@
         Title="Settings" Height="390" Width="496">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
@@ -16,12 +16,25 @@
             <ColumnDefinition Width="100"></ColumnDefinition>
             <ColumnDefinition Width="100"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="20,20,20,20" HorizontalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="3">
+        <StackPanel Orientation="Horizontal" Margin="20,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="3">
             <Label Content="MatLAB Folder" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Top"/>
             <TextBox x:Name="MatlabPathTextBox" Height="23" Margin="0,0,5,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="284"/>
             <Button Content="Browse..." HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Click="Browse_Click" />
         </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="20,0,20,20" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3">
+            <Label Content="or choose from the MATLAB installations found:" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top"/>
+            <ListBox Grid.ColumnSpan="2" HorizontalAlignment="Center" Height="100" Width="284" Grid.Row="1" VerticalAlignment="Top" Name="InstallationsListBox" SelectionChanged="InstallationsListBox_SelectionChanged" GotMouseCapture="InstallationsListBox_GotMouseCapture">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Margin="5" Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            
+        </StackPanel>
         <Button Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Click="SaveButton_Click">Save</Button>
-        <Button Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Click="Close_Click">Discard</Button>
+        <Button Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Click="Close_Click" IsEnabled="False" Name="DiscardButton">Discard</Button>
     </Grid>
 </Controls:MetroWindow>

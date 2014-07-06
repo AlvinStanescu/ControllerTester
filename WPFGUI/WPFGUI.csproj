@@ -96,6 +96,7 @@
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Configuration\FMTesterConfiguration.cs" />
+    <Compile Include="Configuration\MatlabInstallation.cs" />
     <Compile Include="Configuration\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>

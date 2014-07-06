@@ -37,7 +37,7 @@ namespace FM4CC.WPFGUI.Configuration
         {
             FMTesterConfiguration newConfiguration;
 
-            if (!File.Exists(path)) return new FMTesterConfiguration();
+            if (!File.Exists(path)) return null;
             FileStream f = File.OpenRead(path);
             XmlReader reader = XmlReader.Create(f);
             XmlSerializer xsSubmit = new XmlSerializer(typeof(FMTesterConfiguration));
