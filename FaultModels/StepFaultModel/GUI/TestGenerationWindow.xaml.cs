@@ -100,7 +100,6 @@ namespace FM4CC.FaultModels.Step.GUI
 
             if (((bool)e.Result) == true)
             {
-                ProcessWorstCaseResults();
                 log("Step Fault Model - Worst-case Search ended successfully");
                 this.DialogResult = true;
                 this.Close();
@@ -112,26 +111,6 @@ namespace FM4CC.FaultModels.Step.GUI
                 this.DialogResult = false;
                 this.Close();
                 MessageBox.Show("Failed to run the model, an unexpected error occurred.", "Model run", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ProcessWorstCaseResults()
-        {
-            WorstCaseScenarioWorker worstCaseWorker = (WorstCaseScenarioWorker)faultModel.WorstCaseWorker;
-
-            foreach (DataGridHeatPoint region in worstCaseWorker.SelectedRegions)
-            {
-                string worstPointFile = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\SingleStateSearch\\SingleStateSearch_WorstCase.csv";
-
-                FaultModelTesterTestCase testCase = new StepFaultModelTestCase();
-                testCase.FaultModel = faultModel.ToString();
-                testCase.Name = "Worst " + region.Requirement + " in region (" + 
-                    String.Format("{0:0.##}",region.InitialDesiredRegion * region.BaseUnit) + "," +
-                    String.Format("{0:0.##}",(region.InitialDesiredRegion + 1) * region.BaseUnit) + ")x(" +
-                    String.Format("{0:0.##}",region.FinalDesiredRegion * region.BaseUnit) + "," + 
-                    String.Format("{0:0.##}",(region.FinalDesiredRegion + 1) * region.BaseUnit) + ")";
-                testCase.Input = SingleStateSearchParser.Parse(worstPointFile);
-                testCases.Add(testCase);
             }
         }
 
@@ -358,6 +337,7 @@ namespace FM4CC.FaultModels.Step.GUI
             {
                 log("Step Fault Model - Worst-case search started");
                 WorstCaseScenarioWorker singleStateWorker = (WorstCaseScenarioWorker)faultModel.WorstCaseWorker;
+                singleStateWorker.TestCases = testCases;
                 singleStateWorker.RunWorkerCompleted += WorstCaseSearchWorker_RunWorkerCompleted;
 
                 IList<DataGridHeatPoint> worstHeatPoints = new List<DataGridHeatPoint>();
@@ -391,6 +371,8 @@ namespace FM4CC.FaultModels.Step.GUI
                 WorstCaseScenarioWorker singleStateWorker = (WorstCaseScenarioWorker)faultModel.WorstCaseWorker;
                 singleStateWorker.RunWorkerCompleted += WorstCaseSearchWorker_RunWorkerCompleted;
                 singleStateWorker.SelectedRegions = selectedRegions;
+                singleStateWorker.TestCases = testCases;
+
                 progressWindow = new ProgressWindow("Performing worst-case search", " Estimated progress: ");
                 progressWindow.Closed += progressWindow_Closed;
                 singleStateWorker.ProgressChanged += progressWindow.ProgressChanged;

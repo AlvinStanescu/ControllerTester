@@ -1,7 +1,10 @@
 ﻿using FM4CC.ExecutionEngine;
+using FM4CC.FaultModels.Step.Parsers;
+using FM4CC.TestCase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +15,7 @@ namespace FM4CC.FaultModels.Step
     internal class WorstCaseScenarioWorker : BackgroundWorker
     {
         internal IList<DataGridHeatPoint> SelectedRegions {get; set;}
+        internal IList<TestCase.FaultModelTesterTestCase> TestCases { get; set; }
 
         internal WorstCaseScenarioWorker()
         {
@@ -68,6 +72,9 @@ namespace FM4CC.FaultModels.Step
                 }
                 i++;
                 this.ReportProgress((int)((double)i / SelectedRegions.Count * 100.0));
+
+                string worstPointFile = Path.GetDirectoryName(fm.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\SingleStateSearch\\SingleStateSearch_WorstCase.csv";
+                ProcessWorstCaseResults(region, worstPointFile, fm.ToString());
             }
 
             // Tears down the environment
@@ -79,5 +86,17 @@ namespace FM4CC.FaultModels.Step
 
         }
 
+        private void ProcessWorstCaseResults(DataGridHeatPoint region, string worstPointFile, string faultModelName)
+        {
+            FaultModelTesterTestCase testCase = new StepFaultModelTestCase();
+            testCase.FaultModel = faultModelName;
+            testCase.Name = "Worst " + region.Requirement + " in region (" +
+                String.Format("{0:0.##}", region.InitialDesiredRegion * region.BaseUnit) + "," +
+                String.Format("{0:0.##}", (region.InitialDesiredRegion + 1) * region.BaseUnit) + ")x(" +
+                String.Format("{0:0.##}", region.FinalDesiredRegion * region.BaseUnit) + "," +
+                String.Format("{0:0.##}", (region.FinalDesiredRegion + 1) * region.BaseUnit) + ")";
+            testCase.Input = SingleStateSearchParser.Parse(worstPointFile);
+            TestCases.Add(testCase);
+        }
     }
 }
