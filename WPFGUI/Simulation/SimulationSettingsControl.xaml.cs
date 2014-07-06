@@ -133,7 +133,7 @@ namespace FM4CC.WPFGUI.Simulation
 
             if (desiredValueReachedTime >= modelSimulationTime)
             {
-                MessageBox.Show("Invalid desired value reached time", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Invalid desired value reached time. The desired value reached time cannot be greater or equal to the model simulation time.", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
