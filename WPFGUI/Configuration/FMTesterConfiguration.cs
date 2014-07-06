@@ -16,7 +16,11 @@ namespace FM4CC.WPFGUI.Configuration
 
         public FMTesterConfiguration()
         {
-            ScriptsPath = Directory.GetCurrentDirectory() + "\\..\\..\\..\\FaultModels\\Common";
+#if DEBUG
+            ScriptsPath = Directory.GetCurrentDirectory() +"\\..\\..\\..\\FaultModels\\Common";
+#else
+            ScriptsPath = Directory.GetCurrentDirectory();
+#endif
         }
 
         public void SaveSettings(string path)

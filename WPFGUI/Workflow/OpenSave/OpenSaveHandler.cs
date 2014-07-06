@@ -59,49 +59,61 @@ namespace FM4CC.WPFGUI.Workflow.OpenSave
             }
         }
 
-        public static OpenProjectStatus OpenProject(ref TestProject testProject)
+        private static OpenProjectStatus OpenExistingProject(ref TestProject testProject, string path)
         {
-            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            openFileDialog.Title = "Open test project";
-            openFileDialog.RestoreDirectory = true;
-            openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-            openFileDialog.Filter = "Fault Model Tester Projects (*.fmpx) | *.fmpx";
+            FileStream f = File.OpenRead(path);
+            XmlReader reader = XmlReader.Create(new StreamReader(f, Encoding.GetEncoding("UTF-8")));
 
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var listOfFaultModelAssemblies = (from lAssembly in AppDomain.CurrentDomain.GetAssemblies()
+                                              where lAssembly.FullName.Contains("FaultModel")
+                                              select lAssembly).ToArray();
+            var extraTypes = (from lAssembly in listOfFaultModelAssemblies
+                              from lType in lAssembly.GetTypes()
+                              where lType.IsSubclassOf(typeof(FM4CC.Environment.FaultModelConfiguration))
+                              select lType).ToArray();
+            var extraTypes2 = (from lAssembly in listOfFaultModelAssemblies
+                               from lType in lAssembly.GetTypes()
+                               where lType.IsSubclassOf(typeof(FM4CC.TestCase.FaultModelTesterTestCase))
+                               select lType).ToArray();
+            var extraType3 = new Type[] { typeof(SimulationSettings) };
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(TestProject), extraTypes.Concat(extraTypes2).ToArray());
+
+            if (xsSubmit.CanDeserialize(reader))
             {
-                FileStream f = File.OpenRead(openFileDialog.FileName);
-                XmlReader reader = XmlReader.Create(new StreamReader(f, Encoding.GetEncoding("UTF-8")));
+                testProject = xsSubmit.Deserialize(reader) as TestProject;
+                f.Close();
 
-                var listOfFaultModelAssemblies = (from lAssembly in AppDomain.CurrentDomain.GetAssemblies()
-                                                  where lAssembly.FullName.Contains("FaultModel")
-                                                  select lAssembly).ToArray();
-                var extraTypes = (from lAssembly in listOfFaultModelAssemblies
-                                  from lType in lAssembly.GetTypes()
-                                  where lType.IsSubclassOf(typeof(FM4CC.Environment.FaultModelConfiguration))
-                                  select lType).ToArray();
-                var extraTypes2 = (from lAssembly in listOfFaultModelAssemblies
-                                   from lType in lAssembly.GetTypes()
-                                   where lType.IsSubclassOf(typeof(FM4CC.TestCase.FaultModelTesterTestCase))
-                                   select lType).ToArray();
-                var extraType3 = new Type[] { typeof(SimulationSettings) };
-                XmlSerializer xsSubmit = new XmlSerializer(typeof(TestProject), extraTypes.Concat(extraTypes2).ToArray());
-                
-                if (xsSubmit.CanDeserialize(reader))
+                return OpenProjectStatus.Opened;
+            }
+            else
+            {
+                f.Close();
+                return OpenProjectStatus.Invalid;
+            }
+        }
+
+        public static OpenProjectStatus OpenProject(ref TestProject testProject, string path = null)
+        {
+            if (path == null)
+            {
+                System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog();
+                openFileDialog.Title = "Open test project";
+                openFileDialog.RestoreDirectory = true;
+                openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+                openFileDialog.Filter = "Fault Model Tester Projects (*.fmpx) | *.fmpx";
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    testProject = xsSubmit.Deserialize(reader) as TestProject;
-                    f.Close();
-
-                    return OpenProjectStatus.Opened;
+                    return OpenExistingProject(ref testProject, openFileDialog.FileName);
                 }
                 else
                 {
-                    f.Close();
-                    return OpenProjectStatus.Invalid;
+                    return OpenProjectStatus.Canceled;
                 }
             }
             else
             {
-                return OpenProjectStatus.Canceled;
+                return OpenExistingProject(ref testProject, path);
             }
         }
 

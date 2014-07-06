@@ -1,7 +1,6 @@
 % this script executes the model with a single uniform desired value
 % there is no inherent fault model behind it, its main purpose being to
 % verify that simulating the system works as intended
-diary(strcat(CT_ScriptsPath,'/Temp/output.log'));
 try
     % add all the paths containing the model and the functions we use
     addpath(CT_ModelPath);
@@ -59,4 +58,3 @@ catch e
     display('Error during model execution');
     display(getReport(e));
 end
-diary off;

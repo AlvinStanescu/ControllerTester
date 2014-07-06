@@ -312,9 +312,9 @@ namespace FM4CC.WPFGUI
             }
         }
 
-        internal void ShowOpenProject()
+        internal void ShowOpenProject(string path = null)
         {
-            OpenSaveHandler.OpenProjectStatus status = OpenSaveHandler.OpenProject(ref currentTestProject);
+            OpenSaveHandler.OpenProjectStatus status = OpenSaveHandler.OpenProject(ref currentTestProject, path);
 
             if (status == OpenSaveHandler.OpenProjectStatus.Opened)
             {

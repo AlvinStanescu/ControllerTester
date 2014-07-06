@@ -13,7 +13,7 @@ addpath(strcat(CT_ScriptsPath, '\ObjectiveFunctions'));
 addpath(strcat(CT_ScriptsPath, '\Util'));
 
 % begin logging 
-CT_DiaryInit(strcat(CT_ScriptsPath,'/Temp/output.log'));
+CT_DiaryInit(strcat(CT_UserTempPath,'/ControllerTesterOutput.log'));
 try
     % configure the static model configuration parameters and load the
     % model into the system memory

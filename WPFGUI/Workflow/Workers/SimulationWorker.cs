@@ -75,9 +75,10 @@ namespace FM4CC.WPFGUI.Workflow.Workers
             environment.PutVariable(prefix + "TimeStable", this.settings.StableStartTime);
             environment.PutVariable(prefix + "SmoothnessStartDifference", this.settings.SmoothnessStartDifference);
             environment.PutVariable(prefix + "ResponsivenessPercentClose", this.settings.ResponsivenessPercentClose);
+            environment.PutVariable(prefix + "UserTempPath", System.IO.Path.GetTempPath());
 
             environment.ChangeWorkingFolder(scriptsPath + "\\ModelExecution");
-            environment.ExecuteCommand("save('settings')");
+            environment.ExecuteCommand("save('" + System.IO.Path.GetTempPath() + "settings.mat')");
             process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;

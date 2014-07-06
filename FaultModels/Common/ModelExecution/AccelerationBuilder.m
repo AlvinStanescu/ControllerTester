@@ -3,7 +3,8 @@
 % verify that simulating the system works as intended
 try
     % add all the paths containing the model and the functions we use
-    load('settings');
+    temp_directory = tempdir;
+    load(strcat(temp_directory,'settings.mat'));
     addpath(CT_ModelPath);
     addpath(strcat(CT_ScriptsPath, '/ObjectiveFunctions'));
     addpath(strcat(CT_ScriptsPath, '/Util'));
@@ -43,4 +44,4 @@ catch e
     display('Error during model compilation');
     display(getReport(e));
 end
-diary off;
+exit;

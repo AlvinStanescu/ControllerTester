@@ -76,7 +76,7 @@ namespace FM4CC.FaultModels.Step
                     Directory.CreateDirectory(tempPath);
                 }
                 ExecutionEngine.PutVariable(prefix + "TempPath", tempPath);
-
+                ExecutionEngine.PutVariable(prefix + "UserTempPath", System.IO.Path.GetTempPath());
                 // Add primitive parameters directly to the execution engine
                 Dictionary<string, object>.Enumerator primitiveEnumerator = FaultModelConfiguration.GetParametersEnumerator();
 

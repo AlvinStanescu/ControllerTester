@@ -102,6 +102,12 @@ namespace FM4CC.WPFGUI
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             ReplaceRibbonApplicationMenuButtonContent(Ribbon.ApplicationMenu);
+            if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments != null && AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData != null && AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData.Any())
+            {
+                string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
+                var uri = new Uri(activationData[0]);
+                viewModel.ShowOpenProject(uri.LocalPath);
+            }
         }
 
         private void NewTestProject_Click(object sender, RoutedEventArgs e)
