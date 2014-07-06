@@ -1,9 +1,6 @@
 # Controller Tester
 *Copyright 2014 Alvin Stanescu, Software Engineering Chair @ Technische Universitaet Munchen*
 
-![Technische Universitaet Muenchen](/WPFGUI/Resources/TUM.png)
-
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -33,7 +30,8 @@ To be able to run the Controller Tester, the following software is required:
 
 ## Usage 
 The Controller Tester can manage test projects and is able to use MATLAB Simulink to manually or automatically simulate controller models. Fault models are used as a basis for describing the problems which occurr when implementing a particular system. The currently used version of MATLAB depends on the version registered as an Automation Server. To change the registered COM Automation Server, type the following command into the MATLAB Console of your chosen version:
-> !matlab -regserver
+
+    !matlab -regserver
 
 More information is available at: http://www.mathworks.com/help/matlab/call-matlab-com-automation-server.html
 
@@ -55,3 +53,6 @@ The objective functions of each requirement are computed based on the controller
 
 ## Further development
 The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
+
+## Known issues
+* When moving a project from a computer to another and using the project the model should be built before, since the MATLAB COM Automation Server fails at building the model. For this purpose please re-validate the simulation settings so that an accelerated model is built, or create a new project on the other PC, since the SimulationWorker contains a workaround for building the accelerated model.
