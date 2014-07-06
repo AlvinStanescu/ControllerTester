@@ -4609,7 +4609,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
 		<row><td>_Built</td><td>contro_1_controller_tester</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>WPFGUI.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>_Built_ED6D67E1877F4AC795713BD8E32173FB.exe</td><td>0</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>WPFGUI.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>_Built1_16F4FBB670EE4CBD8FA5DB141809412B.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>WPFGUI.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>_Built1_16F4FBB670EE4CBD8FA5DB141809412B.exe</td><td>0</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">
