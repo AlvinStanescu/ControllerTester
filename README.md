@@ -22,7 +22,8 @@ A digital copy is available from http://dx.doi.org/10.1007/978-3-642-39742-4_12.
 ## Requirements
 To be able to compile the Controller Tester, the following software is needed:
 * **Visual Studio 2013** or newer, with .NET Framework 4.5.1 (however, Visual Studio 2012 with .NET Framework 4.5 should also work if the target framework of the solution is changed)
-* The MahApps.Metro UI Framework (found on NuGet)
+* The MahApps.Metro UI Framework (NuGet, downloads automatically)
+* log4net (NuGet, downloads automatically)
   
 To be able to run the Controller Tester, the following software is required:
 * a PC with Windows Vista SP2, Windows 7 SP1, Windows 8 or Windows 8.1 with the *.NET Framework 4.5.1* installed
@@ -55,4 +56,4 @@ The objective functions of each requirement are computed based on the controller
 The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
 
 ## Known issues
-* When moving a project from a computer to another and using the project the model should be built before, since the MATLAB COM Automation Server fails at building the model. For this purpose please re-validate the simulation settings so that an accelerated model is built, or create a new project on the other PC, since the SimulationWorker contains a workaround for building the accelerated model.
+* When moving a project from a computer to another or re-installing the application, always re-run the Simulation Settings Validation, since the accelerated model fails to build the MATLAB COM Automation Server. For this purpose please re-validate the simulation settings so that an accelerated model is built, or create a new project on the other PC, since the SimulationWorker contains a workaround for building the accelerated model.
