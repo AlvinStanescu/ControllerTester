@@ -6,10 +6,13 @@ using FM4CC.Simulation;
 using FM4CC.TestCase;
 using FM4CC.Util;
 using FM4CC.WPFGUI.Configuration;
+using FM4CC.WPFGUI.Console;
 using FM4CC.WPFGUI.Project;
 using FM4CC.WPFGUI.Simulation;
 using FM4CC.WPFGUI.Workflow.OpenSave;
 using FM4CC.WPFGUI.Workflow.Workers;
+using log4net;
+using log4net.Appender;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,11 +47,30 @@ namespace FM4CC.WPFGUI
         private IDictionary<string, ExecutionEnvironment> allExecutionEngines;
 
         private ProgressWindow progressWindow;
+        private readonly ILog log = LogManager.GetLogger("ControllerTester");
 
         internal MainViewModel(MainWindow mainWindow)
         {
+            // configure logging functionality
+            var textBoxAppender = new TextBoxAppender(mainWindow.ConsoleTextBox) { Layout = new log4net.Layout.PatternLayout("%date [%thread] %level %logger - %message%newline") };
+            textBoxAppender.Threshold = log4net.Core.Level.All;
+
+            var rollingFileAppender = new log4net.Appender.RollingFileAppender { Layout = new log4net.Layout.PatternLayout("%date [%thread] %level %logger - %message%newline"), Name="ControllerTester" };
+            rollingFileAppender.AppendToFile = true;
+            rollingFileAppender.File = "output.log";
+            rollingFileAppender.RollingStyle = log4net.Appender.RollingFileAppender.RollingMode.Size;
+            rollingFileAppender.MaxSizeRollBackups = 5;
+            rollingFileAppender.MaximumFileSize = "10MB";
+            rollingFileAppender.StaticLogFileName = true;
+            
+            var appenders = new AppenderSkeleton[] { textBoxAppender, rollingFileAppender };
+            log4net.Config.BasicConfigurator.Configure(appenders);
+
+            // load the application
             this.mainWindow = mainWindow;
             this.mainWindow.WindowState = WindowState.Maximized;
+
+            // load the fault model and execution engine assemblies
             LoadAssemblies();
             LoadExecutionEngines(new List<string>() {Directory.GetCurrentDirectory()});
             connectedControl = new Dictionary<ListViewItem, UserControl>();
@@ -128,7 +150,7 @@ namespace FM4CC.WPFGUI
         /// <param name="executionEnvironmentPaths">List of the paths to all of the ExecutionEnvironment assemblies</param>
         private void LoadExecutionEngines(IList<string> executionEnvironmentPaths)
         {
-            // Mock
+            // TODO
             // read execution environment assemblies from XML or directory
             // load execution environment assemblies
             allExecutionEngines = new Dictionary<string, ExecutionEnvironment>();
@@ -172,6 +194,7 @@ namespace FM4CC.WPFGUI
                         {
                             FaultModel newFaultModel = (FaultModel)Activator.CreateInstance(faultModelAssemblies[faultModelName].GetType("FM4CC.FaultModels." + faultModelName.Substring(0, faultModelName.IndexOf("FaultModel")) + "." + faultModelName), args);
                             faultModels.Add(faultModelName, newFaultModel);
+                            currentTestProject.FaultModelSettings.Add(faultModelName, (FaultModelConfiguration)args[1]);
                         }
                         catch (FM4CCException)
                         {
@@ -289,6 +312,7 @@ namespace FM4CC.WPFGUI
                     mainWindow.TestCaseInfoGroup.IsEnabled = true;
                     mainWindow.ComboBoxTestCases.ItemsSource = CollectionViewSource.GetDefaultView(currentTestProject.TestCases);
                     mainWindow.ComboBoxTestCases.SelectedItem = currentTestProject.TestCases[0];
+                    mainWindow.ClearButton.IsEnabled = true;
                 }
             }
             else
@@ -340,18 +364,19 @@ namespace FM4CC.WPFGUI
                     mainWindow.TestCaseInfoGroup.IsEnabled = true;
                     mainWindow.ComboBoxTestCases.ItemsSource = CollectionViewSource.GetDefaultView(currentTestProject.TestCases);
                     mainWindow.ComboBoxTestCases.SelectedItem = currentTestProject.TestCases[0];
+                    mainWindow.ClearButton.IsEnabled = true;
                 }
             }
             else if (status == OpenSaveHandler.OpenProjectStatus.Invalid)
             {
-                MessageBox.Show("Cannot open file, format unrecognized.", "Error openin file", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Cannot open file, format unrecognized.", "Error opening file", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             
         }
 
         public void Log(string text)
         {
-            mainWindow.ConsoleTextBox.Text += text + "\r\n";
+            log.Info(text);
         }
 
         #region Settings
@@ -432,6 +457,7 @@ namespace FM4CC.WPFGUI
             mainWindow.TestCaseExecutionGroup.IsEnabled = false;
             mainWindow.TestCaseInfoGroup.IsEnabled = false;
             mainWindow.TestCaseInfoText.Text = "";
+            mainWindow.ClearButton.IsEnabled = false;
         }
 
         internal void ExecuteTestCase(object selected)
@@ -447,6 +473,8 @@ namespace FM4CC.WPFGUI
             }
             
             fm.ExecutionInstance = currentTestProject.Instance;
+            fm.SimulationSettings = currentTestProject.ModelSimulationSettings;
+
             TestCaseExecutionWorker worker = new TestCaseExecutionWorker(fm);
             worker.RunWorkerCompleted += testCaseExecutionWorker_RunWorkerCompleted;
             progressWindow = new ProgressWindow("Running the test case", "Please wait while the test case is run...");

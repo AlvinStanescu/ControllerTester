@@ -70,7 +70,7 @@ namespace FM4CC.FaultModels.Step
                 ExecutionEngine.PutVariable(prefix + "ModelConfigurationFile", ExecutionInstance.GetValue("SUTSettingsPath"));
                 ExecutionEngine.PutVariable(prefix + "ModelSimulationTime", SimulationSettings.ModelSimulationTime);
 
-                string tempPath = modelPath + "\\Temp";
+                string tempPath = modelPath + "\\ControllerTesterResults";
                 if (!Directory.Exists(tempPath))
                 {
                     Directory.CreateDirectory(tempPath);
@@ -96,7 +96,7 @@ namespace FM4CC.FaultModels.Step
 
                 ExecutionEngine.PutVariable(prefix + "TimeStable", this.SimulationSettings.StableStartTime);
                 ExecutionEngine.PutVariable(prefix + "SmoothnessStartDifference", this.SimulationSettings.SmoothnessStartDifference);
-                ExecutionEngine.PutVariable(prefix + "ResponsivenessPercentClose", this.SimulationSettings.ResponsivenessPercentClose / 100);
+                ExecutionEngine.PutVariable(prefix + "ResponsivenessClose", this.SimulationSettings.ResponsivenessClose);
 
                 setupDone = true;
             }
@@ -217,17 +217,16 @@ namespace FM4CC.FaultModels.Step
 
         private TimeSpan GetRandomExplorationEstimatedRunningTime()
         {
-            // TODO
-
-            double num = 0L;
-            List<string> requirements = this.FaultModelConfiguration.GetValue("Requirements", "complex") as List<string>;
-            if (requirements.Count > 0)
+            // get number of cores, since MATLAB's Parallel Computing Toolbox typically starts the same amount of workers
+            int coreCount = 0;
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get())
             {
-                num = (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("PointsPerRegion") * SimulationSettings.ModelRunningTime;
-
-                num += (double)(requirements.Count);
+                coreCount += int.Parse(item["NumberOfCores"].ToString());
             }
-            TimeSpan result = new TimeSpan(0, 0, (int)(num));
+
+            double time = SimulationSettings.ModelRunningTime * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("PointsPerRegion") / (double)coreCount;
+
+            TimeSpan result = new TimeSpan(0, 0, (int)(time));
             return result;
         }
 

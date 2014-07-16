@@ -17,7 +17,7 @@ try
     CT_SimulationSteps=int64(simulationTime/CT_ModelTimeStep);
     
     % pre-allocate space
-	ObjectiveFunctionValues = zeros(6,1);
+	ObjectiveFunctionValues = zeros(7,1);
 
     % start the timer to measure the running time of the model together
     % with the objective function computation
@@ -35,13 +35,13 @@ try
     actualValue = simOut.get(CT_ActualVariableName);
     
     % calculate the objective functions
-    ObjectiveFunctionValues = zeros(6, 1);
-    ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, CT_ModelTimeStep, CT_TimeStable); % tStable
-    ObjectiveFunctionValues(2) = ObjectiveFunction_Liveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_TimeStable); % tLive
-    ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, CT_DesiredValue, CT_SimulationSteps/2 + 1, CT_SmoothnessStartDifference); % indexStart, startDifference
-    ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_SimulationSteps/2 + 1, CT_ResponsivenessPercentClose); % indexStart, percentClose
-    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Oscillation(actualValue.signals.values, CT_ModelTimeStep, CT_TimeStable); % tStable
- 
+    ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
+    ObjectiveFunctionValues(2) = ObjectiveFunction_Liveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
+    ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, CT_DesiredValue, CT_SimulationSteps/2 + 1, CT_SmoothnessStartDifference);
+    ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_SimulationSteps/2 + 1, CT_ResponsivenessClose);
+    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Oscillation(actualValue.signals.values, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
+    ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue.signals.values, CT_ActualValueRangeStart, CT_ActualValueRangeEnd);
+
     % stop the timer
     duration = toc;
     % output the model running time (?)

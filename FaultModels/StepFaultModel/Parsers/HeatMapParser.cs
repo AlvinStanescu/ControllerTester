@@ -32,11 +32,12 @@ namespace FM4CC.FaultModels.Step.Parsers
                 string[] values = line.Split(',');
                 double x = Double.Parse(values[0], CultureInfo.InvariantCulture);
                 double y = Double.Parse(values[1], CultureInfo.InvariantCulture);
+                bool exceededRange = Convert.ToBoolean(Int32.Parse(values[8]));
 
                 for (int i = 0; i < 5; i++)
                 {
                     double intensity = Double.Parse(values[i + 2], CultureInfo.InvariantCulture);
-                    HeatPoint hp = new HeatPoint(x, y, intensity);
+                    StepHeatPoint hp = new StepHeatPoint(x, y, intensity, exceededRange);
                     retrievedData[i].HeatPoints.Add(hp);
 
                     if (intensity > maximumValue[i]) maximumValue[i] = intensity;

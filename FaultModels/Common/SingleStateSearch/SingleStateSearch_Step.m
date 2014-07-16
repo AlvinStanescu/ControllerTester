@@ -13,7 +13,7 @@ addpath(strcat(CT_ScriptsPath, '\ObjectiveFunctions'));
 addpath(strcat(CT_ScriptsPath, '\Util'));
 
 % begin logging 
-CT_DiaryInit(strcat(CT_UserTempPath,'/ControllerTesterOutput.log'));
+CT_DiaryInit(strcat(CT_UserTempPath,'\ControllerTesterOutput.log'));
 try
     % configure the static model configuration parameters and load the
     % model into the system memory
@@ -37,7 +37,7 @@ try
     
     % convert the problem to a minimization problem for use with the
     % (global) optimization toolbox
-    hSimulation = @(p)(-1*SimulateModelStep(CT_ModelFile, p(1), p(2), CT_MaxObjectiveFunctionIndex, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessPercentClose, CT_AccelerationDisabled, CT_ModelConfigurationFile));
+    hSimulation = @(p)(-1*SimulateModelStep(CT_ModelFile, p(1), p(2), CT_ActualValueRangeStart, CT_ActualValueRangeEnd, CT_MaxObjectiveFunctionIndex, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile));
     lb = [RegionXStart, RegionYStart];
     ub = [RegionXEnd, RegionYEnd];
     

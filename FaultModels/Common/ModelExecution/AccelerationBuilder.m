@@ -40,6 +40,7 @@ try
     % output the model running time (?)
     display('Successful compilation of the accelerated model');
     display(strcat('runningTime=', num2str(duration)));
+    close_system(gcs, 0);
 catch e
     display('Error during model compilation');
     display(getReport(e));

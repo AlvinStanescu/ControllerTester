@@ -7,6 +7,7 @@ using FM4CC.TestCase;
 using FM4CC.Util;
 using FM4CC.Util.Heatmap;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,7 +33,7 @@ namespace FM4CC.FaultModels.Step.GUI
     public partial class TestGenerationWindow : MetroWindow
     {
         private StepFaultModel faultModel;
-        private ProgressWindow progressWindow;
+        private static ProgressDialogController progressController;
         
         private IList<HeatMapDataSource> sources;
         private IList<HeatMapDataSource> simpleSources;
@@ -54,7 +55,6 @@ namespace FM4CC.FaultModels.Step.GUI
             this.EnableDWMDropShadow = true;
 
             this.Title = "Test Case Generation - Step Fault Model";
-            log("Step Fault Model - Random exploration started");
 
             requirements = (IList<string>)faultModel.FaultModelConfiguration.GetValue("Requirements", "complex");
 
@@ -67,9 +67,12 @@ namespace FM4CC.FaultModels.Step.GUI
 
         }
 
-        void TestRunWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private async void TestRunWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            progressWindow.Close();
+            if (progressController.IsOpen)
+            {
+                await progressController.CloseAsync();
+            }
 
             if (((bool)e.Result) == false)
             {
@@ -77,9 +80,12 @@ namespace FM4CC.FaultModels.Step.GUI
             }
         }
 
-        void GenerationWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private async void GenerationWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            progressWindow.Close();
+            if (progressController.IsOpen)
+            {
+                await progressController.CloseAsync();
+            }
 
             if (((bool)e.Result) == true)
             {
@@ -88,15 +94,17 @@ namespace FM4CC.FaultModels.Step.GUI
             }
             else
             {
-                log("Step Fault Model - Random exploration failed with error " + e.Error.Message);
-                MessageBox.Show("Generation failed, please check the settings. Error:\r\n" + e.Error.Message, "Generation failed", MessageBoxButton.OK, MessageBoxImage.Information);
+                log("Step Fault Model - Random exploration stopped");
                 this.Close();
             }
         }
 
-        void WorstCaseSearchWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private async void WorstCaseSearchWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            progressWindow.Close();
+            if (progressController.IsOpen)
+            {
+                await progressController.CloseAsync();
+            }
 
             if (((bool)e.Result) == true)
             {
@@ -107,18 +115,28 @@ namespace FM4CC.FaultModels.Step.GUI
             }
             else
             {
-                log("Step Fault Model -  Worst-case Search failed because of an unexpected error");
-                this.DialogResult = false;
-                this.Close();
-                MessageBox.Show("Failed to run the model, an unexpected error occurred.", "Model run", MessageBoxButton.OK, MessageBoxImage.Error);
+                log("Step Fault Model -  Worst-case Search aborted");
             }
         }
+
+        public void ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            double progress = ((double)e.ProgressPercentage) / 100;
+            if (progress > 1.00)
+            {
+                progress = 1.00;
+            }
+
+            progressController.SetProgress(progress);
+            CheckIfCanceled();
+        }
+
 
         private void ProcessResults()
         {
             this.WaitLabel.Visibility = System.Windows.Visibility.Hidden;
-            string tempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\RandomExploration\\RandomExplorationPoints_Step.csv";
-            string simpleTempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\RandomExploration\\RandomExplorationRegions_Step.csv";
+            string tempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\ControllerTesterResults\\RandomExploration\\RandomExplorationPoints_Step.csv";
+            string simpleTempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\ControllerTesterResults\\RandomExploration\\RandomExplorationRegions_Step.csv";
 
             FaultModelConfiguration fmConfig = faultModel.FaultModelConfiguration;
 
@@ -137,7 +155,7 @@ namespace FM4CC.FaultModels.Step.GUI
 
                 foreach (HeatPoint hp in simpleSources[i].HeatPoints)
                 {
-                    _explorationResults.Add(new DataGridHeatPoint(hp, baseUnit, simpleSources[i].Name));
+                    _explorationResults.Add(new DataGridHeatPoint(hp as StepHeatPoint, baseUnit, simpleSources[i].Name));
                 }
 
                 _explorationResults.Sort(CompareIntensities);
@@ -191,6 +209,7 @@ namespace FM4CC.FaultModels.Step.GUI
 
             DurationTextBlock.Text = durationBuilder.ToString();
         }
+
         private static int CompareIntensities(DataGridHeatPoint a, DataGridHeatPoint b)
         {
             return b.Intensity.CompareTo(a.Intensity);
@@ -207,10 +226,10 @@ namespace FM4CC.FaultModels.Step.GUI
             }
         }
 
-        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            string tempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\RandomExploration\\RandomExplorationPoints_Step.csv";
-            string simpleTempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\RandomExploration\\RandomExplorationRegions_Step.csv";
+            string tempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\ControllerTesterResults\\RandomExploration\\RandomExplorationPoints_Step.csv";
+            string simpleTempPath = Path.GetDirectoryName(faultModel.ExecutionInstance.GetValue("SUTPath")) + "\\ControllerTesterResults\\RandomExploration\\RandomExplorationRegions_Step.csv";
 
             // TODO add check for same region count and points per region
             if (File.Exists(tempPath) && File.Exists(simpleTempPath) && MessageBoxResult.Yes == MessageBox.Show("Found results from a previous random exploration. Do you want to load them instead?", "Previous exploration found", MessageBoxButton.YesNo, MessageBoxImage.Question))
@@ -223,25 +242,28 @@ namespace FM4CC.FaultModels.Step.GUI
                 generationWorker.RunWorkerCompleted += GenerationWorker_RunWorkerCompleted;
 
                 log("Step Fault Model - Random exploration started");
-                progressWindow = new ProgressWindow("Performing generation", " Estimated progress: ");
-                progressWindow.Closed += progressWindow_Closed;
-                generationWorker.ProgressChanged += progressWindow.ProgressChanged;
+
+                progressController = await this.ShowProgressAsync("Performing random exploration", "Estimated progress:", true);
+                generationWorker.ProgressChanged += ProgressChanged;
                 generationWorker.RunWorkerAsync(faultModel);
-                progressWindow.ShowDialog(this);
-                progressWindow.ShowCloseButton = false;
             }
         }
 
-        private void progressWindow_Closed(object sender, EventArgs e)
+        private void CheckIfCanceled()
         {
-            if (faultModel.RandomExplorationWorker.IsBusy)
+            if (progressController.IsCanceled && faultModel.RandomExplorationWorker.IsBusy && !faultModel.RandomExplorationWorker.CancellationPending)
             {
                 faultModel.RandomExplorationWorker.CancelAsync();
-                this.Close();
+            }
+
+            if (progressController.IsCanceled && faultModel.WorstCaseWorker.IsBusy && !faultModel.WorstCaseWorker.CancellationPending)
+            {
+                faultModel.WorstCaseWorker.CancelAsync();
             }
         }
+
         
-        private void RunButton_Click(object sender, RoutedEventArgs e)
+        private async void RunButton_Click(object sender, RoutedEventArgs e)
         {
             (sender as Button).GetValue(DataGridRow.AlternationIndexProperty);
             DataGridHeatPoint runHeatPoint = (DataGridHeatPoint)ExplorationDataGrid.SelectedValue;
@@ -251,11 +273,11 @@ namespace FM4CC.FaultModels.Step.GUI
             testRunWorker.FinalDesired = runHeatPoint.FinalDesired;
             testRunWorker.RunWorkerCompleted += TestRunWorker_RunWorkerCompleted;
 
-            progressWindow = new ProgressWindow("Running the model, please wait...", " Estimated progress: ");
-            progressWindow.ShowCloseButton = false;
-            testRunWorker.ProgressChanged += progressWindow.ProgressChanged;
+            progressController = await this.ShowProgressAsync("Running the model", "Please wait...");
+            progressController.SetCancelable(false);
+            progressController.SetIndeterminate();
+
             testRunWorker.RunWorkerAsync(faultModel);
-            progressWindow.ShowDialog(this);
 
             log("Step Fault Model - Ran model with initial desired value " + runHeatPoint.InitialDesired + " and final desired value " + runHeatPoint.FinalDesired);
 
@@ -331,7 +353,7 @@ namespace FM4CC.FaultModels.Step.GUI
             UpdateEstimation(faultModel.GetEstimatedDuration("WorstCaseSearch"), cnt * requirements.Count);
         }
 
-        private void Generate_Click(object sender, RoutedEventArgs e)
+        private async void Generate_Click(object sender, RoutedEventArgs e)
         {
             if ((bool)InvestigateWorstCaseRadioButton.IsChecked)
             {
@@ -348,11 +370,12 @@ namespace FM4CC.FaultModels.Step.GUI
                 }
 
                 singleStateWorker.SelectedRegions = worstHeatPoints;
-                progressWindow = new ProgressWindow("Performing worst-case search", " Estimated progress: ");
-                progressWindow.Closed += progressWindow_Closed;
-                singleStateWorker.ProgressChanged += progressWindow.ProgressChanged;
+
+                progressController = await this.ShowProgressAsync("Performing worst-case search", "Estimated progress:", true);
+
+                singleStateWorker.ProgressChanged += this.ProgressChanged;
                 singleStateWorker.RunWorkerAsync(faultModel);
-                progressWindow.ShowDialog(this);
+
             }
             else
             {
@@ -373,11 +396,11 @@ namespace FM4CC.FaultModels.Step.GUI
                 singleStateWorker.SelectedRegions = selectedRegions;
                 singleStateWorker.TestCases = testCases;
 
-                progressWindow = new ProgressWindow("Performing worst-case search", " Estimated progress: ");
-                progressWindow.Closed += progressWindow_Closed;
-                singleStateWorker.ProgressChanged += progressWindow.ProgressChanged;
+                progressController = await this.ShowProgressAsync("Performing worst-case search", "Estimated progress:", true);
+
+                singleStateWorker.ProgressChanged += this.ProgressChanged;
                 singleStateWorker.RunWorkerAsync(faultModel);
-                progressWindow.ShowDialog(this);
+
             }
         }
         

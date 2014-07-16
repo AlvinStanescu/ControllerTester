@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -16,6 +17,8 @@ namespace FM4CC.FaultModels.Step
         private static System.Timers.Timer aTimer;
         private double estimatedDuration;
         private double passedDuration;
+        private StepFaultModel fm;
+        private bool isRunning;
 
         public RandomExplorationWorker()
         {
@@ -26,41 +29,49 @@ namespace FM4CC.FaultModels.Step
 
         private void generationWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            StepFaultModel fm = e.Argument as StepFaultModel;
-            ExecutionInstance currentTestProject = fm.ExecutionInstance;
-            
-            string message = null;
-            fm.ExecutionEngine.AcquireProcess();
-                
-            // Sets up the environment of the execution engine
-            fm.ExecutionInstance = currentTestProject;
-            fm.SetUpEnvironment();
+            try
+            {
+                isRunning = false;
+                fm = e.Argument as StepFaultModel;
+                ExecutionInstance currentTestProject = fm.ExecutionInstance;
 
-            passedDuration = 0.0;
-            estimatedDuration = fm.GetEstimatedDuration("RandomExploration").TotalMilliseconds;
+                string message = null;
+                fm.ExecutionEngine.AcquireProcess();
 
-            aTimer = new System.Timers.Timer(100);
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Enabled = true;
-            aTimer.AutoReset = true;
+                // Sets up the environment of the execution engine
+                fm.ExecutionInstance = currentTestProject;
+                fm.SetUpEnvironment();
 
-            message = (string)fm.Run("RandomExploration");
+                passedDuration = 0.0;
+                estimatedDuration = fm.GetEstimatedDuration("RandomExploration").TotalMilliseconds;
 
-            // Tears down the environment
-            fm.TearDownEnvironment(false);
+                aTimer = new System.Timers.Timer(100);
+                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                aTimer.Enabled = true;
+                aTimer.AutoReset = true;
 
-            // Relinquishes control of the execution engine
-            fm.ExecutionEngine.RelinquishProcess();
-            aTimer.Enabled = false;
+                isRunning = true;
+                message = (string)fm.Run("RandomExploration");
 
-            if (!message.ToLower().Contains("success"))
+                // Tears down the environment
+                fm.TearDownEnvironment(false);
+
+                // Relinquishes control of the execution engine
+                fm.ExecutionEngine.RelinquishProcess();
+                aTimer.Enabled = false;
+
+                if (!message.ToLower().Contains("success"))
+                {
+                    e.Result = false;
+                    throw new FM4CCException(message);
+                }
+
+                e.Result = true;
+            }
+            catch(TargetInvocationException)
             {
                 e.Result = false;
-                throw new FM4CCException(message);
             }
-
-            e.Result = true;
-
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -68,6 +79,16 @@ namespace FM4CC.FaultModels.Step
             passedDuration += 100.0;
 
             this.ReportProgress((int)((passedDuration / estimatedDuration) * 100.0));
+            
+            if (this.CancellationPending && isRunning)
+            {
+                // kill the execution engine and relinquish control
+                aTimer.Enabled = false;
+
+                fm.ExecutionEngine.Kill();
+                fm.TearDownEnvironment(false);
+                fm.ExecutionEngine.RelinquishProcess();
+            }
         }
     }
 }

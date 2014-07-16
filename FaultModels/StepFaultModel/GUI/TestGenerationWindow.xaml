@@ -79,6 +79,7 @@
                     <DataGridTextColumn Header="Final Desired" IsReadOnly="True" Binding="{Binding FinalDesired}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Region Initial Desired" IsReadOnly="True" Binding="{Binding InitialDesiredRegion}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Region Final Desired" IsReadOnly="True" Binding="{Binding FinalDesiredRegion}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Physical Range Exceeded" IsReadOnly="True" Binding="{Binding PhysicalRangeExceeded}"></DataGridTextColumn>
                     <DataGridTemplateColumn Header="Run" IsReadOnly="True" Width="60" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>

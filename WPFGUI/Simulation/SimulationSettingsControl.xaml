@@ -9,11 +9,11 @@
             <ColumnDefinition Width="140*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="180*"></RowDefinition>
             <RowDefinition Height="240*"></RowDefinition>
+            <RowDefinition Height="180*"></RowDefinition>
             <RowDefinition Height="80"></RowDefinition>
         </Grid.RowDefinitions>
-        <GroupBox Header="Simulation Time bounds" Grid.Column="0">
+        <GroupBox Header="Simulation Time bounds" Grid.Column="0" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="170"></ColumnDefinition>
@@ -28,15 +28,15 @@
                 <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Model simulation time</Label>
                 <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Desired value reached after</Label>
                 <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Smoothness start difference</Label>
-                <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Responsiveness percent close</Label>
+                <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Responsiveness close value</Label>
 
                 <Controls:NumericUpDown Grid.Row="0" Grid.Column="1" Value="1" Minimum="0.001" StringFormat="{}{0:N2}s" Name="ModelSimulationTimeNumUpDown" GotFocus="ModelSimulationTimeNumUpDown_GotFocus" ></Controls:NumericUpDown>
                 <Controls:NumericUpDown Grid.Row="1" Grid.Column="1" Value="0.8" Minimum="0.001" StringFormat="{}{0:N2}s" Name="DesiredValueReachedNumUpDown" GotFocus="DesiredValueReachedNumUpDown_GotFocus"></Controls:NumericUpDown>
-                <Controls:NumericUpDown Grid.Row="2" Grid.Column="1" Value="0.01" Minimum="0" Name="SmoothnessStartDifferenceNumUpDown" GotFocus="SmoothnessStartDifferenceNumUpDown_GotFocus"></Controls:NumericUpDown>
-                <Controls:NumericUpDown Grid.Row="3" Grid.Column="1" Value="95" Maximum="100" Minimum="0" StringFormat="{}{0:N2}%" Name="ResponsivenessPercentCloseNumUpDown" GotFocus="ResponsivenessPercentCloseNumUpDown_GotFocus"></Controls:NumericUpDown>
+                <Controls:NumericUpDown Grid.Row="2" Grid.Column="1" Value="0.01" Minimum="0.0001" Name="SmoothnessStartDifferenceNumUpDown" GotFocus="SmoothnessStartDifferenceNumUpDown_GotFocus"></Controls:NumericUpDown>
+                <Controls:NumericUpDown Grid.Row="3" Grid.Column="1" Value="0.01" Minimum="0.0001" Name="ResponsivenessCloseNumUpDown" GotFocus="ResponsivenessCloseNumUpDown_GotFocus"></Controls:NumericUpDown>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Simulation parameters" Grid.Column="0" Grid.Row="1">
+        <GroupBox Header="Simulation parameters" Grid.Column="0" Grid.Row="0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="170"></ColumnDefinition>
@@ -57,11 +57,11 @@
                 <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Actual variable - From</Label>
                 <Label Grid.Row="5" Grid.Column="0" VerticalAlignment="Center">Actual variable - To</Label>
 
-                <TextBox Controls:TextboxHelper.ClearTextButton="True" Controls:TextboxHelper.Watermark="name of the variable containing the desired value" Grid.Row="0" Grid.Column="1" Name="DesiredValueNameTextBox" GotFocus="DesiredValueNameTextBox_GotFocus"/>
+                <TextBox TextAlignment="Right" Controls:TextboxHelper.ClearTextButton="True" Controls:TextboxHelper.Watermark="name of the variable containing the desired value" Grid.Row="0" Grid.Column="1" Name="DesiredValueNameTextBox" GotFocus="DesiredValueNameTextBox_GotFocus"/>
                 <Controls:NumericUpDown Grid.Row="1" Grid.Column="1" Value="0" Name="DesiredValueFromNumUpDown" GotFocus="DesiredValueFromNumUpDown_GotFocus"></Controls:NumericUpDown>
                 <Controls:NumericUpDown Grid.Row="2" Grid.Column="1" Value="0" Name="DesiredValueToNumUpDown" GotFocus="DesiredValueToNumUpDown_GotFocus"></Controls:NumericUpDown>
-                
-                <TextBox Controls:TextboxHelper.ClearTextButton="True" Controls:TextboxHelper.Watermark="name of the variable containing the actual value" Grid.Row="3" Grid.Column="1" Name="ActualValueNameTextBox" GotFocus="ActualValueNameTextBox_GotFocus"/>
+
+                <TextBox TextAlignment="Right" Controls:TextboxHelper.ClearTextButton="True" Controls:TextboxHelper.Watermark="name of the variable containing the actual value" Grid.Row="3" Grid.Column="1" Name="ActualValueNameTextBox" GotFocus="ActualValueNameTextBox_GotFocus"/>
                 <Controls:NumericUpDown Grid.Row="4" Grid.Column="1" Value="0" Name="ActualValueFromNumUpDown" GotFocus="ActualValueFromNumUpDown_GotFocus"></Controls:NumericUpDown>
                 <Controls:NumericUpDown Grid.Row="5" Grid.Column="1" Value="0" Name="ActualValueToNumUpDown" GotFocus="ActualValueToNumUpDown_GotFocus"></Controls:NumericUpDown>
             </Grid>
@@ -71,7 +71,6 @@
             <TextBlock TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" TextAlignment="Justify" Margin="5,5,5,5" FontSize="14" Name="DescriptionTextBlock"></TextBlock>
         </GroupBox>
 
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="25,5,165,5" Height="40" Width="100" Click="Validate_Click">Validate</Button>
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="25,5,25,5" Height="40" Width="100" Click="Discard_Click">Discard</Button>
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="25,5,20,5" Height="40" Width="100" Click="Validate_Click">Validate</Button>
     </Grid>
 </UserControl>

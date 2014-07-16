@@ -14,17 +14,17 @@ namespace FM4CC.Simulation
         public double ModelSimulationTime { get; set; }
         public double StableStartTime { get; set; }
         public double SmoothnessStartDifference { get; set; }
-        public double ResponsivenessPercentClose { get; set; }
+        public double ResponsivenessClose { get; set; }
         public SimulationParameter DesiredVariable { get; set; }
         public SimulationParameter ActualVariable { get; set; }
                 
 
-        public SimulationSettings(double modelSimTime, double stableStartTime, double startDiff, double respPercentClose, SimulationParameter desired, SimulationParameter actual)
+        public SimulationSettings(double modelSimTime, double stableStartTime, double startDiff, double respClose, SimulationParameter desired, SimulationParameter actual)
         {
             this.ModelSimulationTime = modelSimTime;
             this.StableStartTime = stableStartTime;
             this.SmoothnessStartDifference = startDiff;
-            this.ResponsivenessPercentClose = respPercentClose;
+            this.ResponsivenessClose = respClose;
             this.DesiredVariable = desired;
             this.ActualVariable = actual;
         }

@@ -1,10 +1,18 @@
-function [NoChange] = ObjectiveFunction_NoActualValueChange(simulationObj, tStableInitial, tChange)
-    NoChange = 1;
+function [NoChange, StabilityProblemsSmell] = ObjectiveFunction_NoActualValueChange(ActualValueSignal, SimulationStepSize, DesiredValue, AllowedOscillation, tStableInitial, tChange)
+    NoChange = true;
+    len = length(ActualValueSignal);
+    StabilityProblemsSmell = false;
+
+    MeanActualAfterNewDesiredValue = mean(ActualValueSignal(tChange/SimulationStepSize:len));
+    MeanActualAfterInitialDesiredValueStable = mean(ActualValueSignal(tStableInitial/SimulationStepSize:len));
     
-    MeanActualAfterInitialDesiredValueStable = mean(simulationObj.ActualValueSignal(tChange*simulationObj.SimulationStepSize):length(simulationObj.ActualValueSignal));
-    MeanActualAfterNewDesiredValue = mean(simulationObj.ActualValueSignal(tStableInitial*simulationObj.SimulationStepSize):length(simulationObj.ActualValueSignal));
+    if (abs(MeanActualAfterInitialDesiredValueStable - MeanActualAfterNewDesiredValue) > (MeanActualAfterInitialDesiredValueStable/10000))
+        NoChange = false;
+    end
     
-    if (abs(MeanActualAfterInitialDesiredValueStable - MeanActualAfterNewDesiredValue) > 0.01)
-        NoChange = 0;
+    % if the value at the end is greater than the desired value +- 2* the allowed
+    % oscillation, the controller might exhibit stability problems
+    if NoChange == false && (ActualValueSignal(length(ActualValueSignal)) > DesiredValue * (100 + 2*AllowedOscillation)/100 || ActualValueSignal(length(ActualValueSignal)) < DesiredValue * (100 - 2*AllowedOscillation)/100)
+        StabilityProblemsSmell = true;
     end
 end

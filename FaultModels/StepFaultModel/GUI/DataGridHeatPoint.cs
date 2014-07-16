@@ -12,10 +12,18 @@ namespace FM4CC.FaultModels.Step
     internal class DataGridHeatPoint : INotifyPropertyChanged
     {
         private double _baseUnit;
-        private HeatPoint _containedHeatPoint;
+        private StepHeatPoint _containedHeatPoint;
         private Button _button;
         private bool _analyze;
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool PhysicalRangeExceeded 
+        {
+            get
+            {
+                return _containedHeatPoint.PhysicalRangeExceeded;
+            }
+        }
 
         public HeatPoint ContainedHeatPoint
         {
@@ -100,7 +108,7 @@ namespace FM4CC.FaultModels.Step
             }
         }
 
-        public DataGridHeatPoint(HeatPoint hp, double baseUnit, string requirement)
+        public DataGridHeatPoint(StepHeatPoint hp, double baseUnit, string requirement)
         {
             this.Requirement = requirement;
             _baseUnit = baseUnit;

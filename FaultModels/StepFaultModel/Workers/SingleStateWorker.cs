@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -16,73 +18,94 @@ namespace FM4CC.FaultModels.Step
     {
         internal IList<DataGridHeatPoint> SelectedRegions {get; set;}
         internal IList<TestCase.FaultModelTesterTestCase> TestCases { get; set; }
+        private static System.Timers.Timer aTimer;
+        private StepFaultModel fm;
+        private bool isRunning;
 
         internal WorstCaseScenarioWorker()
         {
             this.WorkerReportsProgress = true;
+            this.WorkerSupportsCancellation = true;
             this.DoWork += singleStateWorker_DoWork;
         }
 
         private void singleStateWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (SelectedRegions == null) throw new FM4CCException("Search regions not set");
-
-            StepFaultModel fm = e.Argument as StepFaultModel;
-            ExecutionInstance currentTestProject = fm.ExecutionInstance;
-
-            string message = null;
-            fm.ExecutionEngine.AcquireProcess();
-                
-            // Sets up the environment of the execution engine
-            fm.ExecutionInstance = currentTestProject;
-            fm.SetUpEnvironment();
-
-            int i = 0;
-            foreach (DataGridHeatPoint region in SelectedRegions)
+            try
             {
-                int requirementIndex = 1;
+                isRunning = false;
+                if (SelectedRegions == null) throw new FM4CCException("Search regions not set");
 
-                switch(region.Requirement)
+                aTimer = new System.Timers.Timer(100);
+                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+                aTimer.Enabled = true;
+                aTimer.AutoReset = true;
+
+                fm = e.Argument as StepFaultModel;
+                ExecutionInstance currentTestProject = fm.ExecutionInstance;
+
+                string message = null;
+                fm.ExecutionEngine.AcquireProcess();
+
+                // Sets up the environment of the execution engine
+                fm.ExecutionInstance = currentTestProject;
+                fm.SetUpEnvironment();
+
+                int i = 0;
+                foreach (DataGridHeatPoint region in SelectedRegions)
                 {
-                    case "Stability": 
-                        requirementIndex = 1;
-                        break;
-                    case "Liveness":
-                        requirementIndex = 2;
-                        break;
-                    case "Smoothness":
-                        requirementIndex = 3;
-                        break;
-                    case "Responsiveness":
-                        requirementIndex = 4;
-                        break;
-                    case "Oscillation":
-                        requirementIndex = 5;
-                        break;
+                    int requirementIndex = 1;
+
+                    switch (region.Requirement)
+                    {
+                        case "Stability":
+                            requirementIndex = 1;
+                            break;
+                        case "Liveness":
+                            requirementIndex = 2;
+                            break;
+                        case "Smoothness":
+                            requirementIndex = 3;
+                            break;
+                        case "Responsiveness":
+                            requirementIndex = 4;
+                            break;
+                        case "Oscillation":
+                            requirementIndex = 5;
+                            break;
+                    }
+
+                    fm.SetSearchParameters(requirementIndex, region.InitialDesiredRegion, region.FinalDesiredRegion, region.ContainedHeatPoint);
+
+                    isRunning = true;
+
+                    message = (string)fm.Run("WorstCaseSearch");
+                                        
+                    if (!message.ToLower().Contains("success"))
+                    {
+                        e.Result = false;
+                        throw new FM4CCException(message);
+                    }
+                    i++;
+                    this.ReportProgress((int)((double)i / SelectedRegions.Count * 100.0));
+
+                    string worstPointFile = Path.GetDirectoryName(fm.ExecutionInstance.GetValue("SUTPath")) + "\\ControllerTesterResults\\SingleStateSearch\\SingleStateSearch_WorstCase.csv";
+                    ProcessWorstCaseResults(region, worstPointFile, fm.ToString());
                 }
 
-                fm.SetSearchParameters(requirementIndex, region.InitialDesiredRegion, region.FinalDesiredRegion, region.ContainedHeatPoint);
+                aTimer.Enabled = false;
 
-                message = (string)fm.Run("WorstCaseSearch");
+                // Tears down the environment
+                fm.TearDownEnvironment(false);
 
-                if (!message.ToLower().Contains("success"))
-                {
-                    e.Result = false;
-                    throw new FM4CCException(message);
-                }
-                i++;
-                this.ReportProgress((int)((double)i / SelectedRegions.Count * 100.0));
-
-                string worstPointFile = Path.GetDirectoryName(fm.ExecutionInstance.GetValue("SUTPath")) + "\\Temp\\SingleStateSearch\\SingleStateSearch_WorstCase.csv";
-                ProcessWorstCaseResults(region, worstPointFile, fm.ToString());
+                // Relinquishes control of the execution engine
+                fm.ExecutionEngine.RelinquishProcess();
+                e.Result = true;
             }
-
-            // Tears down the environment
-            fm.TearDownEnvironment(false);
-
-            // Relinquishes control of the execution engine
-            fm.ExecutionEngine.RelinquishProcess();
-            e.Result = true;
+            catch (TargetInvocationException)
+            {
+                e.Result = false;
+            }
 
         }
 
@@ -97,6 +120,21 @@ namespace FM4CC.FaultModels.Step
                 String.Format("{0:0.##}", (region.FinalDesiredRegion + 1) * region.BaseUnit) + ")";
             testCase.Input = SingleStateSearchParser.Parse(worstPointFile);
             TestCases.Add(testCase);
+        }
+
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        {
+            if (this.CancellationPending)
+            {
+                if (isRunning)
+                {
+                    // kill the execution engine and relinquish control
+                    aTimer.Enabled = false;
+                    fm.ExecutionEngine.Kill();
+                    fm.TearDownEnvironment(false);
+                    fm.ExecutionEngine.RelinquishProcess();
+                }
+            }
         }
     }
 }

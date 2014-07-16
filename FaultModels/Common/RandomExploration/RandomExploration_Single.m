@@ -1,7 +1,7 @@
-%  StepRandomExplorationExecution
+%  RandomExploration_Single
 %
-%  Executes the model with the step fault model as a basis in an
-%  explorative manner, attempting to provide a view of the input space
+%  Executes the model in an explorative manner, attempting to provide a 
+%  view of the input space
 %
 %  Author: Alvin Stanescu
 %
@@ -25,7 +25,7 @@ try
     CT_SimulationSteps=int64(simulationTime/CT_ModelTimeStep);
     
     % pre-allocate space
-    ObjectiveFunctionValues = zeros(CT_Regions, CT_PointsPerRegion, 6);    
+    ObjectiveFunctionValues = zeros(CT_Regions, CT_PointsPerRegion, 7);    
     DesiredValues = zeros(CT_Regions, CT_PointsPerRegion, 1);
         
     parfor RegionCnt = 1 : CT_Regions
@@ -38,7 +38,7 @@ try
         DesiredValue = RegionDesiredValueRangeStart + (RegionDesiredValueRangeEnd - RegionDesiredValueRangeStart) * rand(1);
         
         CurrentDesiredValues = zeros(CT_PointsPerRegion, 1);
-        CurrentObjectiveFunctionValues = zeros(CT_PointsPerRegion, 6);
+        CurrentObjectiveFunctionValues = zeros(CT_PointsPerRegion, 7);
         
         % configure the model in the worker's workspace
         
@@ -47,7 +47,7 @@ try
             CurrentDesiredValues(PointCnt, :) = DesiredValue;
             
             % simulate the model and capture the results
-            CurrentObjectiveFunctionValues(PointCnt, :) = SimulateModelSingle(CT_ModelFile, DesiredValue, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, tStable, tLive, smoothnessStartDifference, responsivenessPercentClose, CT_AccelerationDisabled);
+            CurrentObjectiveFunctionValues(PointCnt, :) = SimulateModelSingle(CT_ModelFile, DesiredValue, CT_ActualValueRangeStart, CT_ActualValueRangeEnd, 0, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile);
             
             % generate a new point p
             if CT_UseAdaptiveRandomSearch == 0

@@ -125,7 +125,7 @@ namespace FM4CC.ExecutionEngine.Process
             {
                 processOwner = null;
 
-                // if a process is waiting, set it as the new owner and  
+                // if a process is waiting, set it as the new owner  
                 if (observers.Count > 0)
                 {
                     lock (syncRoot)
@@ -174,6 +174,10 @@ namespace FM4CC.ExecutionEngine.Process
             process.EndProcess();
         }
 
+        public void Kill()
+        {
+            process.Kill();
+        }
 
     }
 }

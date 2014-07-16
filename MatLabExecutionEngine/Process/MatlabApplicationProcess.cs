@@ -37,6 +37,7 @@ namespace FM4CC.ExecutionEngine.Matlab.Process
                 try
                 {
                     MatLabInstance.GetType().InvokeMember("Quit", BindingFlags.InvokeMethod, null, MatLabInstance, null);
+                    System.Diagnostics.Process.GetProcessesByName("MATLAB");
                 }
                 catch (COMException)
                 {
@@ -52,6 +53,20 @@ namespace FM4CC.ExecutionEngine.Matlab.Process
         public void Dispose()
         {
             EndProcess();
+        }
+
+        public override void Kill()
+        {
+            if (MatLabInstance != null)
+            {
+                MatLabInstance = null;
+                System.Diagnostics.Process[] matlabProcesses = System.Diagnostics.Process.GetProcessesByName("MATLAB");
+                foreach (System.Diagnostics.Process matlabProcess in matlabProcesses)
+                {
+                    matlabProcess.Kill();
+                }
+
+            }
         }
     }
 }

@@ -53,7 +53,7 @@ namespace FM4CC.Util.Heatmap
                     Rectangle r = new Rectangle();
                     r.SetValue(Grid.ColumnProperty, i + 1);
                     r.SetValue(Grid.RowProperty, HeatMapSource.Rows - j);
-                    r.Fill = new SolidColorBrush(Color.FromRgb((byte)Math.Abs(intensity - 255), (byte)Math.Abs(intensity - 255), (byte)Math.Abs(intensity - 255)));
+                    r.Fill = new SolidColorBrush(Color.FromRgb((byte)Math.Abs(intensity), (byte)Math.Abs(intensity), (byte)Math.Abs(intensity)));
                     this.HeatMapGrid.Children.Add(r);
                 }
             }

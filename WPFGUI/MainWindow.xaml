@@ -91,13 +91,13 @@
                 <!-- Test Case Generation  group-->
                 <RibbonGroup Name="TestCaseGenerationGroup" Header="Test Case Generation" IsEnabled="False" >
                     <RibbonButton LargeImageSource="Resources\Icons\generate.png" Label="Generate" KeyTip="G" Click="Generate_Clicked"/>
-                    <RibbonButton LargeImageSource="Resources\Icons\clean.png" Label="Clean" KeyTip="C" Click="Clean_Clicked" IsEnabled="False"/>
+                    <RibbonButton LargeImageSource="Resources\Icons\clean.png" Label="Clean" KeyTip="C" Click="Clean_Clicked" IsEnabled="False" x:Name="ClearButton"/>
                 </RibbonGroup>
 
                 <!-- Test Case Execution group-->
                 <RibbonGroup Name="TestCaseExecutionGroup" Header="Test Case Execution" IsEnabled="False" Width="300">
                     <RibbonButton LargeImageSource="Resources\Icons\run.png" Label="Execute" KeyTip="X" Click="Execute_Clicked" />
-                    <ComboBox x:Name="ComboBoxTestCases" ItemsSource="{Binding}" Width="230" SelectionChanged="cbTestCases_SelectionChanged"></ComboBox>
+                    <ComboBox x:Name="ComboBoxTestCases" ItemsSource="{Binding}" Width="230" SelectionChanged="cbTestCases_SelectionChanged" MaxDropDownHeight="1024"></ComboBox>
                 </RibbonGroup>
 
                 <!-- Test Case Info group-->
@@ -108,7 +108,7 @@
             <RibbonTab Header="INSTRUMENTS" KeyTip="I">
                 <RibbonGroup Name="ToolsRibbonGroup" Header="Tools" IsEnabled="True">
                     <RibbonButton LargeImageSource="Resources\Icons\matlab.ico" Label="Run MATLAB" Click="RunMATLAB_Click"/>    
-                    <RibbonCheckBox Label="Show Console" Click="ShowConsole_Click"></RibbonCheckBox>
+                    <!--<RibbonCheckBox Label="Show Console" Click="ShowConsole_Click" ></RibbonCheckBox>-->
                 </RibbonGroup>
             </RibbonTab>
         </Ribbon>

@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MahApps.Metro.0.13.1.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -57,6 +58,7 @@
     </Compile>
     <Compile Include="Parsers\SingleStateSearchParser.cs" />
     <Compile Include="StepFaultModelTestCase.cs" />
+    <Compile Include="StepHeatPoint.cs" />
     <Compile Include="Workers\RandomExplorationWorker.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -28,7 +28,7 @@ try
     CT_TotalRegions = CT_Regions * CT_Regions;
     
     % pre-allocate space
-    ObjectiveFunctionValues = zeros(CT_TotalRegions, CT_PointsPerRegion, 6);    
+    ObjectiveFunctionValues = zeros(CT_TotalRegions, CT_PointsPerRegion, 7);    
     DesiredValues = zeros(CT_TotalRegions, CT_PointsPerRegion, 2);
         
     parfor RegionCnt = 1 : CT_TotalRegions
@@ -48,7 +48,7 @@ try
         DesiredValue = RegionYDesiredValueRangeStart + (RegionYDesiredValueRangeEnd - RegionYDesiredValueRangeStart) * rand(1);
         
         CurrentDesiredValues = zeros(CT_PointsPerRegion, 2);
-        CurrentObjectiveFunctionValues = zeros(CT_PointsPerRegion, 6);
+        CurrentObjectiveFunctionValues = zeros(CT_PointsPerRegion, 7);
         
         % configure the model in the worker's workspace
         
@@ -56,7 +56,7 @@ try
             % save the generated point p
             CurrentDesiredValues(PointCnt, :) = [InitialDesiredValue, DesiredValue];
             
-            CurrentObjectiveFunctionValues(PointCnt, :) = SimulateModelStep(CT_ModelFile, InitialDesiredValue, DesiredValue, 0, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessPercentClose, CT_AccelerationDisabled, CT_ModelConfigurationFile);
+            CurrentObjectiveFunctionValues(PointCnt, :) = SimulateModelStep(CT_ModelFile, InitialDesiredValue, DesiredValue, CT_ActualValueRangeStart, CT_ActualValueRangeEnd, 0, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile);
             
             % generate a new point p
             if CT_UseAdaptiveRandomSearch == 0

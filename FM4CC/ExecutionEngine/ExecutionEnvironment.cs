@@ -20,5 +20,6 @@ namespace FM4CC.ExecutionEngine
         public abstract string Name {get;}
         public abstract IList<string> SystemTypes {get; }
         public abstract void Dispose();
+        public abstract void Kill();
     }
 }

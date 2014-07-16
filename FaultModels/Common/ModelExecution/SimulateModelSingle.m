@@ -1,4 +1,4 @@
-function [ObjectiveFunctionValues] = SimulateModelSingle(ModelFile, DesiredValue, ObjectiveFunction, SimulationSteps, ModelTimeStep, DesiredVariableName, ActualVariableName, tStable, tLive, smoothnessStartDifference, responsivenessPercentClose, AccelerationDisabled)
+function [ObjectiveFunctionValues] = SimulateModelSingle(ModelFile, DesiredValue, ActualValueRangeStart, ActualValueRangeEnd, ObjectiveFunction, SimulationSteps, ModelTimeStep, DesiredVariableName, ActualVariableName, tStable, tLive, smoothnessStartDifference, responsivenessClose, AccelerationDisabled)
     % generate the time for the desired value
     assignin('base', DesiredVariableName, CT_GenerateSingleDesiredValue(SimulationSteps, ModelTimeStep, DesiredValue));
             
@@ -13,24 +13,26 @@ function [ObjectiveFunctionValues] = SimulateModelSingle(ModelFile, DesiredValue
             
     % calculate the objective functions
     if ObjectiveFunction == 0
-        ObjectiveFunctionValues = zeros(6, 1);
-        ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, ModelTimeStep, tStable); % tStable
-        ObjectiveFunctionValues(2) = ObjectiveFunction_Liveness(actualValue.signals.values, DesiredValue, ModelTimeStep, tLive); % tLive
-        ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, DesiredValue, 1, smoothnessStartDifference); % indexStart, startDifference
-        ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, DesiredValue, ModelTimeStep, 1, responsivenessPercentClose); % indexStart, percentClose
-        [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Oscillation(actualValue.signals.values, ModelTimeStep, tStable); % tStable
+        ObjectiveFunctionValues = zeros(7, 1);
+        ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, ModelTimeStep, tStable);
+        ObjectiveFunctionValues(2) = ObjectiveFunction_Liveness(actualValue.signals.values, DesiredValue, ModelTimeStep, tLive);
+        ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, DesiredValue, 1, smoothnessStartDifference);
+        ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, DesiredValue, ModelTimeStep, 1, responsivenessClose);
+        [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Oscillation(actualValue.signals.values, ModelTimeStep, tStable);
+        ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue.signals.values, ActualValueRangeStart, ActualValueRangeEnd);
+
     else
         switch ObjectiveFunction
             case 1
-                ObjectiveFunctionValues = ObjectiveFunction_Stability(actualValue.signals.values, ModelTimeStep, tStable); % tStable
+                ObjectiveFunctionValues = ObjectiveFunction_Stability(actualValue.signals.values, ModelTimeStep, tStable);
             case 2
-                ObjectiveFunctionValues = ObjectiveFunction_Liveness(actualValue.signals.values, DesiredValue, ModelTimeStep, tLive); % tLive
+                ObjectiveFunctionValues = ObjectiveFunction_Liveness(actualValue.signals.values, DesiredValue, ModelTimeStep, tLive);
             case 3
-                ObjectiveFunctionValues = ObjectiveFunction_Smoothness(actualValue.signals.values, DesiredValue, 1, smoothnessStartDifference); % indexStart, startDifference
+                ObjectiveFunctionValues = ObjectiveFunction_Smoothness(actualValue.signals.values, DesiredValue, 1, smoothnessStartDifference);
             case 4                
-                ObjectiveFunctionValues = ObjectiveFunction_Responsiveness(actualValue.signals.values, DesiredValue, ModelTimeStep, 1, responsivenessPercentClose); % indexStart, percentClose
+                ObjectiveFunctionValues = ObjectiveFunction_Responsiveness(actualValue.signals.values, DesiredValue, ModelTimeStep, 1, responsivenessClose);
             case 5
-                ObjectiveFunctionValues = ObjectiveFunction_Oscillation(actualValue.signals.values, ModelTimeStep, tStable); % tStable
+                ObjectiveFunctionValues = ObjectiveFunction_Oscillation(actualValue.signals.values, ModelTimeStep, tStable);
         end
     end
                        

@@ -28,6 +28,12 @@ namespace FM4CC.ExecutionEngine.Matlab
             eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
 
+        private void RestartProcess()
+        {
+            matlabProcess.RequestProcessRestart(this);
+            matlabApp = new WeakReference<object>(matlabProcess.GetProcess(this).MatLabInstance);
+        }
+
         #region ExecutionEngine Methods
 
         /// <summary>
@@ -60,6 +66,13 @@ namespace FM4CC.ExecutionEngine.Matlab
             {
                 object app;
                 matlabApp.TryGetTarget(out app);
+
+                if (app == null)
+                {
+                    RestartProcess();
+                    matlabApp.TryGetTarget(out app);
+                }
+
                 app.GetType().InvokeMember("PutWorkspaceData", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { name, "base", data });                    
             }
             else
@@ -75,6 +88,13 @@ namespace FM4CC.ExecutionEngine.Matlab
             {
                 object app;
                 matlabApp.TryGetTarget(out app);
+
+                if (app == null)
+                {
+                    RestartProcess();
+                    matlabApp.TryGetTarget(out app);
+                }
+
                 return app.GetType().InvokeMember("GetVariable", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { name, "base" });
             }
             else
@@ -89,6 +109,13 @@ namespace FM4CC.ExecutionEngine.Matlab
             {
                 object app;
                 matlabApp.TryGetTarget(out app);
+                
+                if (app == null)
+                {
+                    RestartProcess();
+                    matlabApp.TryGetTarget(out app);
+                }
+
                 return (string)app.GetType().InvokeMember("Execute", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { command });
             }
             else
@@ -104,6 +131,13 @@ namespace FM4CC.ExecutionEngine.Matlab
             {
                 object app;
                 matlabApp.TryGetTarget(out app);
+
+                if (app == null)
+                {
+                    RestartProcess();
+                    matlabApp.TryGetTarget(out app);
+                }
+
                 return (string)app.GetType().InvokeMember("Execute", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { "plot(" + name + ")" });
             }
             else
@@ -119,6 +153,13 @@ namespace FM4CC.ExecutionEngine.Matlab
             {
                 object app;
                 matlabApp.TryGetTarget(out app);
+
+                if (app == null)
+                {
+                    RestartProcess();
+                    matlabApp.TryGetTarget(out app);
+                }
+
                 return (string)app.GetType().InvokeMember("Execute", System.Reflection.BindingFlags.InvokeMethod, null, app, new object[] { "cd('" + fullPath + "')" });
             }
             else
@@ -129,8 +170,8 @@ namespace FM4CC.ExecutionEngine.Matlab
 
         public override string RunProgram(string[] parameters)
         {
+            // TODO
             return null;
-            // do a script            
         }
 
         public override string Name
@@ -149,6 +190,13 @@ namespace FM4CC.ExecutionEngine.Matlab
                 types.Add("Discrete Controller");
                 types.Add("Hybrid Controller");
                 return types;
+            }
+        }
+        public override void Kill()
+        {
+            if (matlabProcess != null)
+            {
+                matlabProcess.Kill();
             }
         }
 
@@ -192,8 +240,7 @@ namespace FM4CC.ExecutionEngine.Matlab
             }
             catch (COMException)
             {
-                matlabProcess.RequestProcessRestart(this);
-                matlabApp = new WeakReference<object>(matlabProcess.GetProcess(this).MatLabInstance);
+                RestartProcess();
             }
             owningProcess = true;
         }
@@ -207,6 +254,7 @@ namespace FM4CC.ExecutionEngine.Matlab
                 owningProcess = false;
             }
         }
+
         #endregion
 
         #region IDisposable methods

@@ -51,7 +51,7 @@ namespace FM4CC.WPFGUI.Simulation
                 ModelSimulationTimeNumUpDown.Value = settings.ModelSimulationTime as double?;
                 DesiredValueReachedNumUpDown.Value = settings.StableStartTime as double?;
                 SmoothnessStartDifferenceNumUpDown.Value = settings.SmoothnessStartDifference as double?;
-                ResponsivenessPercentCloseNumUpDown.Value = (100.0 - settings.ResponsivenessPercentClose) as double?;
+                ResponsivenessCloseNumUpDown.Value = settings.ResponsivenessClose as double?;
 
                 DesiredValueNameTextBox.Text = settings.DesiredVariable.Name;
                 DesiredValueFromNumUpDown.Value = Decimal.ToDouble(settings.DesiredVariable.FromValue) as double?;
@@ -75,12 +75,12 @@ namespace FM4CC.WPFGUI.Simulation
 
         private void SmoothnessStartDifferenceNumUpDown_GotFocus(object sender, RoutedEventArgs e)
         {
-            this.DescriptionTextBlock.Text = "The absolute difference between actual and desired value after which the smoothness measurement will begin. The value after which the smoothness measurement begins cannot be more than a tenth of the actual value range.";
+            this.DescriptionTextBlock.Text = "The absolute difference between actual and desired value after which the smoothness measurement will begin. The value after which the smoothness measurement begins cannot be more than a tenth of the actual value range. A good guideline would be a value equal to 0.1% of the desired value range.";
         }
 
-        private void ResponsivenessPercentCloseNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        private void ResponsivenessCloseNumUpDown_GotFocus(object sender, RoutedEventArgs e)
         {
-            this.DescriptionTextBlock.Text = "The % of the desired value the actual value needs to reach before the responsiveness measurement ends, percentage at which it is considered that the desired value was approximately reached. ";
+            this.DescriptionTextBlock.Text = "The absolute difference between the actual and the desired value for which the Controller Tester will consider that the desired value was approximately reached. Default: 5% of the desired value range.";
         }
 
         private void DesiredValueNameTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -129,7 +129,7 @@ namespace FM4CC.WPFGUI.Simulation
             double actualFrom = (double)this.ActualValueFromNumUpDown.Value;
             double actualTo = (double)this.ActualValueToNumUpDown.Value;
             double smoothnessDiff = (double)this.SmoothnessStartDifferenceNumUpDown.Value;
-            double responsivenessClose = (double)this.ResponsivenessPercentCloseNumUpDown.Value;
+            double responsivenessClose = (double)this.ResponsivenessCloseNumUpDown.Value;
 
             if (desiredValueReachedTime >= modelSimulationTime)
             {
@@ -157,19 +157,19 @@ namespace FM4CC.WPFGUI.Simulation
 
             if (smoothnessDiff > (Math.Abs(actualFrom - actualTo)/10))
             {
-                MessageBox.Show("The value after which the smoothness measurement begins cannot be more than a tenth of the actual value range", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("The value after which the smoothness measurement begins cannot be more than a tenth of the actual value range.", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (responsivenessClose > 100.0 || responsivenessClose < 75.0)
+            if (responsivenessClose > (Math.Abs(actualFrom - actualTo) / 20))
             {
-                MessageBox.Show("The percent at which the responsiveness measurement begins cannot be more than a tenth of the actual value range", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("The absolute difference between the actual and the desired value at which the responsiveness measurement ends cannot be more than a fifth of the actual value range.", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             SimulationParameter desired = new SimulationParameter(this.DesiredValueNameTextBox.Text, SimulationParameterType.Desired, new decimal(desiredFrom), new decimal(desiredTo));
             SimulationParameter actual = new SimulationParameter(this.ActualValueNameTextBox.Text, SimulationParameterType.Actual, new decimal(actualFrom), new decimal(actualTo));
-            ModelSimulationSettings = new SimulationSettings(modelSimulationTime, desiredValueReachedTime, smoothnessDiff, 100.0 - responsivenessClose, desired, actual);
+            ModelSimulationSettings = new SimulationSettings(modelSimulationTime, desiredValueReachedTime, smoothnessDiff, responsivenessClose, desired, actual);
 
             progressController = await containingWindow.ShowProgressAsync("Please wait...", "Model simulation running");
             progressController.SetIndeterminate();
@@ -185,7 +185,7 @@ namespace FM4CC.WPFGUI.Simulation
             simulationWorker.RunWorkerAsync();
         }
 
-        async void simulationWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private async void simulationWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             string message = (string)e.Result;
             
