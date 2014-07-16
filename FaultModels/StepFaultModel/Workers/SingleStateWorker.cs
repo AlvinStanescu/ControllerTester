@@ -61,7 +61,7 @@ namespace FM4CC.FaultModels.Step
                         case "Stability":
                             requirementIndex = 1;
                             break;
-                        case "Liveness":
+                        case "Precision":
                             requirementIndex = 2;
                             break;
                         case "Smoothness":
@@ -70,7 +70,7 @@ namespace FM4CC.FaultModels.Step
                         case "Responsiveness":
                             requirementIndex = 4;
                             break;
-                        case "Oscillation":
+                        case "Steadiness":
                             requirementIndex = 5;
                             break;
                     }
@@ -86,7 +86,7 @@ namespace FM4CC.FaultModels.Step
                         e.Result = false;
                         throw new FM4CCException(message);
                     }
-                    i++;
+                
                     this.ReportProgress((int)((double)i / SelectedRegions.Count * 100.0));
 
                     string worstPointFile = Path.GetDirectoryName(fm.ExecutionInstance.GetValue("SUTPath")) + "\\ControllerTesterResults\\SingleStateSearch\\SingleStateSearch_WorstCase.csv";

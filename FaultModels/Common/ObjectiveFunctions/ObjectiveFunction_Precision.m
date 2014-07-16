@@ -1,5 +1,5 @@
 %% checks for liveness by computing the maximum absolute difference between desired and actual value (the steady-state error) after t_live
-function [LivenessValue] = ObjectiveFunction_Liveness(ActualValues, DesiredValue, SimulationStepSize, tLive)
+function [LivenessValue] = ObjectiveFunction_Precision(ActualValues, DesiredValue, SimulationStepSize, tLive)
     indexLivenessStart = length(ActualValues) - round(length(ActualValues)-tLive/SimulationStepSize);
     indexLivenessEnd = length(ActualValues);
 

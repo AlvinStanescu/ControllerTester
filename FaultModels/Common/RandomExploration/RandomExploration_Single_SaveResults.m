@@ -23,7 +23,7 @@ function [ ExplorationResults ] = RandomExploration_Single_SaveResults(DesiredVa
     end
   
     PointsFilePath = strcat(ResultsFolderPath, '\RandomExplorationPoints_Single.csv');
-    RandomExplorationResultsHeader={'Desired,Stability,Liveness,Smoothness,Responsiveness,Oscillation,MeanStableValue'};
+    RandomExplorationResultsHeader={'Desired,Stability,Precision,Smoothness,Responsiveness,Steadiness,MeanStableValue'};
     dlmwrite(PointsFilePath, RandomExplorationResultsHeader, '');
     dlmwrite(PointsFilePath, ExplorationResults,'-append', 'delimiter', ',', 'newline', 'pc');
   
@@ -67,7 +67,7 @@ function [ ExplorationResults ] = RandomExploration_Single_SaveResults(DesiredVa
     end
     
     RegionsFilePath = strcat(ResultsFolderPath, '\RandomExplorationRegions_Single.csv');
-    RegionResultsHeader = {'Desired,RangeExceeded,Stability,StabilityWorst,StabilityWorstDesired,Liveness,LivenessWorst,LivenessWorstDesired,Smoothness,SmoothnessWorst,SmoothnessWorstDesired,Responsiveness,ResponsivenessWorst,ResponsivenessWorstDesired,Oscillation,OscillationWorst,OscillationWorstDesired'};
+    RegionResultsHeader = {'Desired,RangeExceeded,Stability,StabilityWorst,StabilityWorstDesired,Precision,PrecisionWorst,PrecisionWorstDesired,Smoothness,SmoothnessWorst,SmoothnessWorstDesired,Responsiveness,ResponsivenessWorst,ResponsivenessWorstDesired,Steadiness,SteadinessWorst,SteadinessWorstDesired'};
     dlmwrite(RegionsFilePath, RegionResultsHeader,'');
     dlmwrite(RegionsFilePath, RegionResults,'-append', 'delimiter', ',', 'newline', 'pc');
 

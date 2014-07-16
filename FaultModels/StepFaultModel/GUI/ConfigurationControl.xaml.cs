@@ -68,6 +68,7 @@ namespace FM4CC.FaultModels.Step.GUI
             this.ExplorationAlgorithmComboBox.Items.Add("AdaptiveRandomSearch");
             this.ExplorationAlgorithmComboBox.Items.Add("RandomSearch");
 
+            this.LocalSeachAlgorithmComboBox.Items.Add("AcceleratedSimulatedAnnealing");
             this.LocalSeachAlgorithmComboBox.Items.Add("SimulatedAnnealing");
             this.LocalSeachAlgorithmComboBox.Items.Add("PatternSearch");
             this.LocalSeachAlgorithmComboBox.Items.Add("MultiStart");
@@ -91,8 +92,8 @@ namespace FM4CC.FaultModels.Step.GUI
                     case "Stability":
                         StabilityCheckBox.IsChecked = true;
                         break;
-                    case "Liveness":
-                        LivenessCheckBox.IsChecked = true;
+                    case "Precision":
+                        PrecisionCheckBox.IsChecked = true;
                         break;
                     case "Smoothness":
                         SmoothnessCheckBox.IsChecked = true;
@@ -100,8 +101,8 @@ namespace FM4CC.FaultModels.Step.GUI
                     case "Responsiveness":
                         ResponsivenessCheckBox.IsChecked = true;
                         break;
-                    case "Oscillation":
-                        OscillationCheckBox.IsChecked = true;
+                    case "Steadiness":
+                        SteadinessCheckBox.IsChecked = true;
                         break;
                     default:
                         break;

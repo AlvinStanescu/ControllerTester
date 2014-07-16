@@ -26,10 +26,10 @@
                 <Controls:NumericUpDown Grid.Column="1" Grid.Row="1" x:Name="PointsPerRegionNumUpDown" Margin="0,2,0,3" Minimum="1" Value="1"></Controls:NumericUpDown>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center" Grid.Row="9" VerticalAlignment="Center"  Margin="6,3,6,0" x:Name="RequirementsStackPanel">
                     <CheckBox Margin="0,3,0,3" x:Name="StabilityCheckBox">Stability</CheckBox>
-                    <CheckBox Margin="0,3,0,3" x:Name="LivenessCheckBox">Liveness</CheckBox>
+                    <CheckBox Margin="0,3,0,3" x:Name="PrecisionCheckBox">Precision</CheckBox>
                     <CheckBox Margin="0,3,0,3" x:Name="SmoothnessCheckBox">Smoothness</CheckBox>
                     <CheckBox Margin="0,3,0,3" x:Name="ResponsivenessCheckBox">Responsiveness</CheckBox>
-                    <CheckBox Margin="0,3,0,3" x:Name="OscillationCheckBox">Oscillation</CheckBox>
+                    <CheckBox Margin="0,3,0,3" x:Name="SteadinessCheckBox">Steadiness</CheckBox>
                 </StackPanel>
 
             </Grid>

@@ -41,10 +41,10 @@ try
             
     % calculate the objective functions
     ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, CT_ModelTimeStep, CT_TimeStable);
-    ObjectiveFunctionValues(2) = ObjectiveFunction_Liveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_TimeStable);
+    ObjectiveFunctionValues(2) = ObjectiveFunction_Precision(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_TimeStable);
     ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, CT_DesiredValue, 1, CT_SmoothnessStartDifference);
     ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, 1, CT_ResponsivenessClose);
-    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Oscillation(actualValue.signals.values, CT_ModelTimeStep, CT_TimeStable);
+    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Steadiness(actualValue.signals.values, CT_ModelTimeStep, CT_TimeStable);
     ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue.signals.values, CT_ActualValueRangeStart, CT_ActualValueRangeEnd);
 
     % stop the timer

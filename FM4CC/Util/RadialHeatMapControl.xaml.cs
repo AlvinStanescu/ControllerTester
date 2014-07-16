@@ -65,7 +65,8 @@ namespace FM4CC.Util.Heatmap
                     using (DrawingContext ctx = dv.RenderOpen())
                     {
                         radialBrush.GradientStops.Clear();
-                        radialBrush.GradientStops.Add(new GradientStop(Color.FromArgb((byte)((point.Intensity-HeatMapSource.MinIntensity)/(HeatMapSource.MaxIntensity - HeatMapSource.MinIntensity)*255), 0, 0, 0), 0.0));
+                        byte intensity = (byte)((point.Intensity-HeatMapSource.MinIntensity)/(HeatMapSource.MaxIntensity - HeatMapSource.MinIntensity)*255);
+                        radialBrush.GradientStops.Add(new GradientStop(Color.FromArgb(intensity, 0, 0, 0), 0.0));
                         radialBrush.GradientStops.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1));
 
                         ctx.DrawRectangle(radialBrush, null, new Rect(point.X / (double)(HeatMapSource.ColumnToValue - HeatMapSource.RowFromValue) * 500.0, 500.0 - point.Y / (double)(HeatMapSource.RowToValue - HeatMapSource.RowFromValue) * 500.0, heatRadius * 2, heatRadius * 2));

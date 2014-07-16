@@ -25,7 +25,7 @@ function [ ExplorationResults ] = RandomExploration_Step_SaveResults(DesiredValu
     end
   
     PointsFilePath = strcat(ResultsFolderPath, '\RandomExplorationPoints_Step.csv');
-    RandomExplorationResultsHeader={'InitialDesired,Desired,Stability,Liveness,Smoothness,Responsiveness,Oscillation,MeanStableValue,PhysicalRangeExceeded'};
+    RandomExplorationResultsHeader={'InitialDesired,Desired,Stability,Precision,Smoothness,Responsiveness,Steadiness,MeanStableValue,PhysicalRangeExceeded'};
     dlmwrite(PointsFilePath, RandomExplorationResultsHeader, '');
     dlmwrite(PointsFilePath, ExplorationResults,'-append', 'delimiter', ',', 'newline', 'pc');
   
@@ -89,7 +89,7 @@ function [ ExplorationResults ] = RandomExploration_Step_SaveResults(DesiredValu
     end
     
     RegionsFilePath = strcat(ResultsFolderPath, '\RandomExplorationRegions_Step.csv');
-    RegionResultsHeader = {'RegionX,RegionY,RangeExceeded,Stability,StabilityWorst,StabilityWorstX,StabilityWorstY,Liveness,LivenessWorst,LivenessWorstX,LivenessWorstY,Smoothness,SmoothnessWorst,SmoothnessWorstX,SmoothnessWorstY,Responsiveness,ResponsivenessWorst,ResponsivenessWorstX,ResponsivenessWorstY,Oscillation,OscillationWorst,OscillationWorstX,OscillationWorstY'};
+    RegionResultsHeader = {'RegionX,RegionY,RangeExceeded,Stability,StabilityWorst,StabilityWorstX,StabilityWorstY,Precision,PrecisionWorst,PrecisionWorstX,PrecisionWorstY,Smoothness,SmoothnessWorst,SmoothnessWorstX,SmoothnessWorstY,Responsiveness,ResponsivenessWorst,ResponsivenessWorstX,ResponsivenessWorstY,Steadiness,SteadinessWorst,SteadinessWorstX,SteadinessWorstY'};
     dlmwrite(RegionsFilePath, RegionResultsHeader,'');
     dlmwrite(RegionsFilePath, RegionResults,'-append', 'delimiter', ',', 'newline', 'pc');
 

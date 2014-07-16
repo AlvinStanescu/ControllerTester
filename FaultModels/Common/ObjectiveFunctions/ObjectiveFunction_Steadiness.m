@@ -1,5 +1,5 @@
 % calculates the oscillation in actual value after tStable
-function [Oscillation, MeanStableValue] = ObjectiveFunction_Oscillation(ActualValues, SimulationStepSize, tStable)
+function [Oscillation, MeanStableValue] = ObjectiveFunction_Steadiness(ActualValues, SimulationStepSize, tStable)
     valuesCnt = length(ActualValues);
     MinValue = ActualValues(valuesCnt);
     MaxValue = ActualValues(valuesCnt);

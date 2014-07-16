@@ -23,7 +23,7 @@ namespace FM4CC.FaultModels.Step
             primitiveParameters.Add("Regions", (double)10);
             primitiveParameters.Add("PointsPerRegion", (double)10);
             primitiveParameters.Add("UseAdaptiveRandomSearch", true);
-            complexParameters.Add("Requirements", new List<string>() { "Stability", "Liveness", "Smoothness", "Responsiveness", "Oscillation" });
+            complexParameters.Add("Requirements", new List<string>() { "Stability", "Precision", "Smoothness", "Responsiveness", "Steadiness" });
             primitiveParameters.Add("OptimizationAlgorithm", "SimulatedAnnealing");
         }
 
