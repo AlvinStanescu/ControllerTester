@@ -43,10 +43,10 @@ The currently implemented fault models are:
 ### The Step Fault Model
 The Step Fault Model was described by *Mattinejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available requirements are:
 * Stability
-* Liveness
+* Precision
 * Smoothness
 * Responsiveness
-* Oscillation
+* Steadiness
 
 The particularity of this fault model is that the input signal, the controller's desired value, is a step function. The reasoning behind the fault model is that usually, in a real-life scenario, the controller does not start from 0 (or whatever initial value it may have). Because of this, a real-life scenario of the controller would be one where the initial value is arbitrary (the current actual value) rather than a constant value. To simulate this scenario, two desired values are generated - an initial desired value and a final desired value, and the controller is simulated with each value for half of the time. This scenario also shows the controller's performance in the case of negative calculations (especially in the case of undershoots), which are typically neglected when doing Model-in-the-Loop testing.
 
