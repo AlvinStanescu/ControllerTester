@@ -19,6 +19,10 @@ This software is based on the work *"Automated Model-in-the-Loop Testing of Cont
 by *Reza Matinnejad, Shiva Nejati, Lionel C. Briand, Thomas Bruckmann and Claude Poull.*, published in *Search Based Software Engineering Lecture Notes in Computer Science Volume 8084, 2013, pp 141-157*.
 A digital copy is available from http://dx.doi.org/10.1007/978-3-642-39742-4_12.
 
+## Installer
+
+An installer is available at https://sourceforge.net/projects/controllertester/.
+
 ## Requirements
 To be able to compile the Controller Tester, the following software is needed:
 * **Visual Studio 2013** or newer, with .NET Framework 4.5.1 (however, Visual Studio 2012 with .NET Framework 4.5 should also work if the target framework of the solution is changed)
