@@ -45,7 +45,7 @@ More information is available at: http://www.mathworks.com/help/matlab/call-matl
 The currently implemented fault models are:
 
 ### The Step Fault Model
-The Step Fault Model was described by *Mattinejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available requirements are:
+The Step Fault Model was described by *Matinnejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available requirements are:
 * Stability
 * Precision
 * Smoothness
