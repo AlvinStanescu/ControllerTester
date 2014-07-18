@@ -19,6 +19,10 @@ This software is based on the work *"Automated Model-in-the-Loop Testing of Cont
 by *Reza Matinnejad, Shiva Nejati, Lionel C. Briand, Thomas Bruckmann and Claude Poull.*, published in *Search Based Software Engineering Lecture Notes in Computer Science Volume 8084, 2013, pp 141-157*.
 A digital copy is available from http://dx.doi.org/10.1007/978-3-642-39742-4_12.
 
+## Installer
+
+An installer is available at https://sourceforge.net/projects/controllertester/.
+
 ## Requirements
 To be able to compile the Controller Tester, the following software is needed:
 * **Visual Studio 2013** or newer, with .NET Framework 4.5.1 (however, Visual Studio 2012 with .NET Framework 4.5 should also work if the target framework of the solution is changed)
@@ -41,12 +45,12 @@ More information is available at: http://www.mathworks.com/help/matlab/call-matl
 The currently implemented fault models are:
 
 ### The Step Fault Model
-The Step Fault Model was described by *Mattinejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available requirements are:
+The Step Fault Model was described by *Matinnejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available requirements are:
 * Stability
-* Liveness
+* Precision
 * Smoothness
 * Responsiveness
-* Oscillation
+* Steadiness
 
 The particularity of this fault model is that the input signal, the controller's desired value, is a step function. The reasoning behind the fault model is that usually, in a real-life scenario, the controller does not start from 0 (or whatever initial value it may have). Because of this, a real-life scenario of the controller would be one where the initial value is arbitrary (the current actual value) rather than a constant value. To simulate this scenario, two desired values are generated - an initial desired value and a final desired value, and the controller is simulated with each value for half of the time. This scenario also shows the controller's performance in the case of negative calculations (especially in the case of undershoots), which are typically neglected when doing Model-in-the-Loop testing.
 
