@@ -89,7 +89,27 @@ namespace FM4CC.WPFGUI
             {
                 ShowSettingsWindow(false);
                 appConfiguration = FMTesterConfiguration.LoadSettings(Constants.SettingsFilePath);
-            }   
+            }
+
+            if (Application.Current.Properties["InputFileName"] != null)
+            {
+                string fname = Application.Current.Properties["InputFileName"].ToString();
+                OpenSaveHandler.OpenProject(ref currentTestProject, fname);
+
+                CloseProject();
+                InitializeProject();
+
+                mainWindow.TestCaseGenerationGroup.IsEnabled = true;
+
+                if (currentTestProject.TestCases.Count != 0)
+                {
+                    mainWindow.TestCaseExecutionGroup.IsEnabled = true;
+                    mainWindow.TestCaseInfoGroup.IsEnabled = true;
+                    mainWindow.ComboBoxTestCases.ItemsSource = CollectionViewSource.GetDefaultView(currentTestProject.TestCases);
+                    mainWindow.ComboBoxTestCases.SelectedItem = currentTestProject.TestCases[0];
+                    mainWindow.ClearButton.IsEnabled = true;
+                }
+            }
         }
 
         private void LoadAssemblies()

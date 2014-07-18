@@ -22,7 +22,7 @@ namespace FM4CC.WPFGUI
         {
             SplashScreen splash = new SplashScreen("Resources\\SplashScreen.png");
             splash.Show(false);
-
+            
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
