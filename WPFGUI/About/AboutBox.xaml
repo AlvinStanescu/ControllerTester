@@ -74,12 +74,20 @@
             <DockPanel x:Uid="buttonArea">
                 <Button x:Name="okButton" x:Uid="okButton" Style="{StaticResource OkButtonStyle}" 
                         Content="OK" />
-                <Label x:Name="productLink" x:Uid="productLink" Style="{StaticResource LinkLabelStyle}" >
-                    <Hyperlink x:Name="hyperlink" x:Uid="hyperlink" NavigateUri="{Binding Mode=OneTime, Path=LinkUri}"  Style="{StaticResource LinkLabelStyle}"
-                               Hyperlink.RequestNavigate="hyperlink_RequestNavigate">
-                        <TextBlock Text="{Binding Mode=OneTime, Path=LinkText}" />
-                    </Hyperlink>
-                </Label>
+                <StackPanel Orientation="Vertical">
+                    <Label x:Name="productLink" x:Uid="productLink" Style="{StaticResource LinkLabelStyle}" >
+                        <Hyperlink x:Name="hyperlink" x:Uid="hyperlink" NavigateUri="{Binding Mode=OneTime, Path=LinkUri}"  Style="{StaticResource LinkLabelStyle}"
+                                   Hyperlink.RequestNavigate="hyperlink_RequestNavigate">
+                            <TextBlock Text="{Binding Mode=OneTime, Path=LinkText}" />
+                        </Hyperlink>
+                    </Label>
+                    <Label x:Name="chairLink" x:Uid="chairLink" Style="{StaticResource LinkLabelStyle}" >
+                        <Hyperlink x:Name="hyperlinkChair" x:Uid="hyperlinkChair" NavigateUri="{Binding Mode=OneTime, Path=LinkChairUri}"  Style="{StaticResource LinkLabelStyle}"
+                                   Hyperlink.RequestNavigate="hyperlink_RequestNavigate">
+                            <TextBlock Text="{Binding Mode=OneTime, Path=LinkChairText}" />
+                        </Hyperlink>
+                    </Label>
+                </StackPanel>
             </DockPanel>
         </StackPanel>
     </StackPanel>

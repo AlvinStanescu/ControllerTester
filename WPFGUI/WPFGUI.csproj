@@ -264,7 +264,7 @@
     <Resource Include="CT.ico" />
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="Resources\SplashScreen.png" />
+    <Resource Include="Resources\SplashScreen.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

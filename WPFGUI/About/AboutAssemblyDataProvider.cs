@@ -34,6 +34,8 @@ namespace FM4CC.WPFGUI
         private const string xPathCompany = xPathRoot + propertyNameCompany;
         private const string xPathLink = xPathRoot + "Link";
         private const string xPathLinkUri = xPathRoot + "Link/@Uri";
+        private const string xPathLinkChair = xPathRoot + "LinkChair";
+        private const string xPathLinkChairUri = xPathRoot + "LinkChair/@Uri";
         #endregion
 
         #region Public properties
@@ -157,6 +159,31 @@ namespace FM4CC.WPFGUI
                 return GetLogicalResourceString(xPathLinkUri);
             }
         }
+
+        /// <summary>
+        /// Gets the link text to display in the About dialog.
+        /// </summary>
+        public string LinkChairText
+        {
+            get
+            {
+                return GetLogicalResourceString(xPathLinkChair);
+            }
+        }
+
+        /// <summary>
+        /// Gets the link uri that is the navigation target of the link.
+        /// </summary>
+        public string LinkChairUri
+        {
+            get
+            {
+                return GetLogicalResourceString(xPathLinkChairUri);
+            }
+        }
+
+
+
         #endregion
 
         #region Helper method

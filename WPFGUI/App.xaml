@@ -1,10 +1,11 @@
 ﻿<Application
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Classic" x:Class="WPFGUI.App"
+             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Classic" 
+             x:Class="FM4CC.WPFGUI.App"
              xmlns:local="clr-namespace:FM4CC.WPFGUI" 
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             StartupUri="MainWindow.xaml">  
+             >  
 
     <Application.Resources>
         <ResourceDictionary>
@@ -19,7 +20,7 @@
             <XmlDataProvider x:Key="aboutProvider" XPath="ApplicationInfo" IsAsynchronous="False" IsInitialLoadEnabled="True">
                 <x:XData>
                     <ApplicationInfo xmlns="">
-                        <Description>Copyright 2014 Alvin Stanescu, Software Engineering Chair / I22 @ Technische Universitaet Muenchen
+                        <Description>Copyright 2014 Alvin Stanescu, Software Engineering Chair / I22 @ Technische Universität München
 
 Licensed under the Apache License, Version 2.0
                             
@@ -32,6 +33,7 @@ This software uses the .NET Framework Version 4.5 by Microsoft and Matlab Versio
 The icons used in this software use the Entypo pictograms by Daniel Bruce available at www.entypo.com under a CC BY-SA 3.0 license.
                         </Description>
                         <Link Uri="https://github.com/AlvinStanescu/ControllerTester">License Terms</Link>
+                        <LinkChair Uri="https://www22.in.tum.de/en/home/">Software Engineering Chair / I22, Technische Universität München</LinkChair>
                     </ApplicationInfo>
                 </x:XData>
             </XmlDataProvider>
