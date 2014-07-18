@@ -45,14 +45,14 @@ More information is available at: http://www.mathworks.com/help/matlab/call-matl
 The currently implemented fault models are:
 
 ### The Step Fault Model
-The Step Fault Model was described by *Matinnejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available requirements are:
-* Stability (checks whether the controller is stable)
-* Precision (measures the maximum steady-state error of the controller)
-* Smoothness (measures the maximum over- and undershoot)
-* Responsiveness (measures the time it takes for the controller to approximately reach the desired value)
-* Steadiness (measures the oscillation in the actual value)
+The Step Fault Model was described by *Matinnejad et. al.* (see above). The automatic test case generation process attempts to maximize the objective function of a requirement in order to find a worst case scenario. The available objective functions are:
+* Stability - measures the standard deviation of the controller after a period of time in which it is allowed to reach the desired value. Should be approximately zero for a stable controller.
+* Precision  - measures the maximum steady-state error of the controller after a period of time in which it is allowed to reach the desired value. Checks whether the controller has a high steady-state error.
+* Smoothness - measures the maximum over- and undershoot of the controller.
+* Responsiveness - measures the time it takes for the controller to approximately reach the desired value.
+* Steadiness - measures the oscillation in the actual value after a period of time in which it is allowed to reach the desired value.
 
-The particularity of this fault model is that the input signal, the controller's desired value, is a step function. The reasoning behind the fault model is that usually, in a real-life scenario, the controller does not start from 0 (or whatever initial value it may have). Because of this, a real-life scenario of the controller would be one where the initial value is arbitrary (the current actual value) rather than a constant value. To simulate this scenario, two desired values are generated - an initial desired value and a final desired value, and the controller is simulated with each value for half of the time. This scenario also shows the controller's performance in the case of negative calculations (especially in the case of undershoots), which are typically neglected when doing Model-in-the-Loop testing.
+Besides this, the fault model also checks if the actual values are in the physical range of the process. The particularity of this fault model is that the input signal, the controller's desired value, is a step function. The reasoning behind the fault model is that usually, in a real-life scenario, the controller does not start from 0 (or whatever initial value it may have). Because of this, a real-life scenario of the controller would be one where the initial value is arbitrary (the current actual value) rather than a constant value. To simulate this scenario, two desired values are generated - an initial desired value and a final desired value, and the controller is simulated with each value for half of the time. This scenario also shows the controller's performance in the case of negative calculations (especially in the case of undershoots), which are typically neglected when doing Model-in-the-Loop testing.
 
 The objective functions of each requirement are computed based on the controller's actual value signal after the final desired value is input to it. The intermediate outcome of the test case generation process is a heatmap indicating possible problematic regions in the 2-D input space. The user can choose the regions he wants to investigate further. The final outcome of our test case generation is a worst case test scenario for a particular requirement in a certain region.
 
