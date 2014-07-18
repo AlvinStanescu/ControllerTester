@@ -1,5 +1,5 @@
 # Controller Tester
-*Copyright 2014 Alvin Stanescu, Software Engineering Chair @ Technische Universitaet Munchen*
+*Copyright 2014 Alvin Stanescu, [Software Engineering Chair @ Technische Universitaet Munchen](https://www22.in.tum.de/en/home/)*
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
