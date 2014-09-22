@@ -40,7 +40,7 @@ The Controller Tester can manage test projects and is able to use MATLAB Simulin
 
 More information is available at: http://www.mathworks.com/help/matlab/call-matlab-com-automation-server.html
 
-**Use a *From Workspace* block for the Desired variable and a *To Workspace* block to export the Actual variable (as Structure or Structure With Time)**
+**Use a *From Workspace* block for the Desired variable and a *To Workspace* block to export the Actual variable (as Structure With Time)**
 
 The currently implemented fault models are:
 
@@ -56,8 +56,11 @@ Besides this, the fault model also checks if the actual values are in the physic
 
 The objective functions of each requirement are computed based on the controller's actual value signal after the final desired value is input to it. The intermediate outcome of the test case generation process is a heatmap indicating possible problematic regions in the 2-D input space. The user can choose the regions he wants to investigate further. The final outcome of our test case generation is a worst case test scenario for a particular requirement in a certain region.
 
+## Changelog - Version 2.0
+* added Variable Time Step support
+* various bug fixes and improvements
+* requires Structure With Time output, Structure output is no longer supported
+* incompatible with pre-2.0 projects, please create a different project
+
 ## Further development
 The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
-
-## Known issues
-* When moving a project from a computer to another or re-installing the application, always re-run the Simulation Settings Validation, since the MATLAB COM Automation Server fails to build the accelerated model. For this purpose please re-validate the simulation settings so that an accelerated model is built, or create a new project on the other PC, since the SimulationWorker contains a workaround for building the accelerated model.
