@@ -76,10 +76,10 @@
     <Compile Include="Workers\TestRunWorker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Workers\SingleStateWorker.cs">
+    <Compile Include="GUI\TestGenerationViewModel.cs" />
+    <Compile Include="Workers\WorstCaseScenarioWorker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\TestGenerationViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FM4CC\Core.csproj">

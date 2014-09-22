@@ -1,4 +1,4 @@
-function [InitialDesiredValue, DesiredValue] = RandomExploration_Step_AdaptiveRandomSearchGenerateNewPoint(CurrentDesiredValues, CurrentNoPoints, RegionXStart, RegionXEnd, RegionYStart, RegionYEnd)
+function [InitialDesiredValue, DesiredValue] = RandomExploration_GenerateNew2DPointAdaptive(CurrentDesiredValues, CurrentNoPoints, RegionXStart, RegionXEnd, RegionYStart, RegionYEnd)
     CandidatePoints = zeros(10, 3);
     ChosenPoint = 1;
     

@@ -27,6 +27,7 @@ namespace FM4CC.WPFGUI.Console
             _textBox.Dispatcher.Invoke(delegate
             {
                 _textBox.AppendText(RenderLoggingEvent(loggingEvent));
+                _textBox.ScrollToEnd();
             });
 
         }

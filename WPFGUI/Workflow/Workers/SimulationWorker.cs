@@ -22,7 +22,6 @@ namespace FM4CC.WPFGUI.Workflow.Workers
         ExecutionEnvironment environment;
         SimulationSettings settings;
         FMTesterConfiguration configuration;
-        System.Diagnostics.Process process;
         string scriptsPath;
 
         public SimulationWorker(ExecutionInstance instance, ExecutionEnvironment environment, SimulationSettings settings, FMTesterConfiguration configuration) : base()
@@ -69,6 +68,9 @@ namespace FM4CC.WPFGUI.Workflow.Workers
             environment.PutVariable(prefix + "ActualValueRangeEnd", Convert.ToDouble(this.settings.ActualVariable.ToValue));
             environment.PutVariable(prefix + "ActualVariableName", this.settings.ActualVariable.Name);
 
+            environment.PutVariable(prefix + "DisturbanceAmplitude", Convert.ToDouble(this.settings.DisturbanceVariable.ToValue));
+            environment.PutVariable(prefix + "DisturbanceVariableName", this.settings.DisturbanceVariable.Name);
+
             environment.PutVariable(prefix + "InitialDesiredValue", Convert.ToDouble(this.settings.DesiredVariable.FromValue));
             environment.PutVariable(prefix + "DesiredValue", Convert.ToDouble(this.settings.DesiredVariable.ToValue));
 
@@ -77,33 +79,14 @@ namespace FM4CC.WPFGUI.Workflow.Workers
             environment.PutVariable(prefix + "ResponsivenessClose", this.settings.ResponsivenessClose);
             environment.PutVariable(prefix + "UserTempPath", System.IO.Path.GetTempPath());
 
-            environment.ChangeWorkingFolder(scriptsPath + "\\ModelExecution");
-            environment.ExecuteCommand("save('" + System.IO.Path.GetTempPath() + "settings.mat')");
-            process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-
-            if (configuration.MatLABFolderPath != null && configuration.MatLABFolderPath != "")
+            string tempPath = modelPath + "\\ControllerTesterResults";
+            if (!Directory.Exists(tempPath))
             {
-                startInfo.FileName = configuration.MatLABFolderPath + "\\bin\\matlab.exe";
-            }
-            else
-            {
-                startInfo.FileName = "matlab.exe";
+                Directory.CreateDirectory(tempPath);
             }
 
-            startInfo.Arguments = "-nodisplay -nosplash -nodesktop -r ";
-            startInfo.Arguments += "\"run('" + scriptsPath + "\\ModelExecution\\AccelerationBuilder.m');\"";
-            process.StartInfo = startInfo;
-            process.Start();
-
-            process.CloseMainWindow();
-
-            while (!File.Exists(scriptsPath + "\\ModelExecution\\compile.done"))
-            {
-                Thread.Sleep(10);
-            }
-            File.Delete(scriptsPath + "\\ModelExecution\\compile.done");
+            environment.ChangeWorkingFolder(tempPath);
+            environment.ExecuteCommand("addpath(strcat(CT_ScriptsPath, '\\ModelExecution'));");
 
             message = environment.ExecuteCommand("TestModelExecution");
 

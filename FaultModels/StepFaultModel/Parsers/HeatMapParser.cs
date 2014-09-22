@@ -1,4 +1,5 @@
-﻿using FM4CC.Util.Heatmap;
+﻿using FM4CC.Util;
+using FM4CC.Util.Heatmap;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,12 +20,13 @@ namespace FM4CC.FaultModels.Step.Parsers
             retrievedData.Add(new HeatMapDataSource() { Name = "Smoothness", Rows = rows, Columns = columns, RowFromValue = rowFromValue, RowToValue = rowToValue, ColumnFromValue = columFromValue, ColumnToValue = columnToValue });
             retrievedData.Add(new HeatMapDataSource() { Name = "Responsiveness", Rows = rows, Columns = columns, RowFromValue = rowFromValue, RowToValue = rowToValue, ColumnFromValue = columFromValue, ColumnToValue = columnToValue });
             retrievedData.Add(new HeatMapDataSource() { Name = "Steadiness", Rows = rows, Columns = columns, RowFromValue = rowFromValue, RowToValue = rowToValue, ColumnFromValue = columFromValue, ColumnToValue = columnToValue });
-            
+            retrievedData.Add(new HeatMapDataSource() { Name = "NormalizedSmoothness", Rows = rows, Columns = columns, RowFromValue = rowFromValue, RowToValue = rowToValue, ColumnFromValue = columFromValue, ColumnToValue = columnToValue });
+
             IEnumerable<string> lines = System.IO.File.ReadLines(filePath);
 
             int cnt = 0;
-            double[] maximumValue = new double[] { Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity };
-            double[] minimumValue = new double[] { Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity };
+            double[] maximumValue = new double[] { Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity };
+            double[] minimumValue = new double[] { Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity };
 
             foreach (string line in lines)
             {
@@ -34,10 +36,27 @@ namespace FM4CC.FaultModels.Step.Parsers
                 double y = Double.Parse(values[1], CultureInfo.InvariantCulture);
                 bool exceededRange = Convert.ToBoolean(Int32.Parse(values[8]));
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    double intensity = Double.Parse(values[i + 2], CultureInfo.InvariantCulture);
-                    StepHeatPoint hp = new StepHeatPoint(x, y, intensity, exceededRange);
+                    double intensity = 0.0;
+
+                    if (i < 5)
+                    {
+                        intensity = ObjectiveFunctionValueParser.Parse(values[i + 2]);
+                    }
+                    else
+                    {
+                        // normalized smoothness
+                        double value = ObjectiveFunctionValueParser.Parse(values[4]);
+                        intensity = value/(value + Math.Abs(y));
+
+                        if (Math.Abs(x - y) < 0.001 * (double)(rowFromValue - rowToValue))
+                        {
+                            intensity = 0;
+                        }
+                    }
+
+                    StepHeatPoint hp = new StepHeatPoint(x, y, intensity, intensity, exceededRange);
                     retrievedData[i].HeatPoints.Add(hp);
 
                     if (intensity > maximumValue[i]) maximumValue[i] = intensity;
@@ -45,7 +64,7 @@ namespace FM4CC.FaultModels.Step.Parsers
                 }
             }
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 6; i++)
             {
                 retrievedData[i].MaxIntensity = maximumValue[i];
                 retrievedData[i].MinIntensity = minimumValue[i];

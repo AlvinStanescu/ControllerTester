@@ -8,6 +8,7 @@ namespace FM4CC.ExecutionEngine.Process
 {
     public class UniqueProcessContainer<T> : IDisposable, ProcessContainer<T> where T : ApplicationProcess, new()
     {
+        public static volatile string Path;
         private static volatile UniqueProcessContainer<T> instance;
         private static object syncRoot = new Object();
         private T process;
@@ -23,7 +24,7 @@ namespace FM4CC.ExecutionEngine.Process
         private UniqueProcessContainer()
         {
             process = new T();
-            process.StartProcess();
+            process.StartProcess(Path);
             observers = new LinkedList<IObserver<bool>>();
         }
 
@@ -165,7 +166,7 @@ namespace FM4CC.ExecutionEngine.Process
             if (owner != null && processOwner == owner)
             {
                 process.EndProcess();
-                process.StartProcess();
+                process.StartProcess(Path);
             }
         }
 

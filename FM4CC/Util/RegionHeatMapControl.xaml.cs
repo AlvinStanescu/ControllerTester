@@ -35,12 +35,11 @@ namespace FM4CC.Util.Heatmap
 
             foreach (HeatPoint hp in HeatMapSource.HeatPoints)
             {
-                int column = (hp.X.CompareTo(160.0) == 0)?HeatMapSource.Columns-1:(int)((decimal)hp.X/columnLength);
-                int row = (hp.Y.CompareTo(160.0) == 0) ? HeatMapSource.Rows - 1 : (int)((decimal)hp.Y / rowLength);
+                int column = (hp.X.CompareTo((double)HeatMapSource.ColumnToValue) == 0) ? HeatMapSource.Columns - 1 : (int)(((decimal)hp.X - HeatMapSource.ColumnFromValue) / columnLength);
+                int row = (hp.Y.CompareTo((double)HeatMapSource.RowToValue) == 0) ? HeatMapSource.Rows - 1 : (int)(((decimal)hp.Y - HeatMapSource.RowFromValue) / rowLength);
 
                 worstCaseHeatPoints[column, row] = (byte)((hp.Intensity - HeatMapSource.MinIntensity) / (HeatMapSource.MaxIntensity - HeatMapSource.MinIntensity) * 255);
             }
-
         }
 
         public override void RenderIntensityMap()

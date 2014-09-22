@@ -58,6 +58,7 @@ namespace FM4CC.FaultModels.Step
 
                 // Clear the workspace
                 ExecutionEngine.ExecuteCommand("clear all;");
+                ExecutionEngine.ExecuteCommand("pctRunOnAll clear all;");
 
                 ExecutionEngine.PutVariable(prefix + "AccelerationDisabled", false);
                 ExecutionEngine.PutVariable(prefix + "ScriptsPath", scriptsPath);
@@ -94,9 +95,19 @@ namespace FM4CC.FaultModels.Step
                 ExecutionEngine.PutVariable(prefix + "ActualValueRangeEnd", Convert.ToDouble(this.SimulationSettings.ActualVariable.ToValue));
                 ExecutionEngine.PutVariable(prefix + "ActualVariableName", this.SimulationSettings.ActualVariable.Name);
 
+                ExecutionEngine.PutVariable(prefix + "DisturbanceAmplitude", Convert.ToDouble(this.SimulationSettings.DisturbanceVariable.ToValue));
+                ExecutionEngine.PutVariable(prefix + "DisturbanceVariableName", this.SimulationSettings.DisturbanceVariable.Name);
+
                 ExecutionEngine.PutVariable(prefix + "TimeStable", this.SimulationSettings.StableStartTime);
                 ExecutionEngine.PutVariable(prefix + "SmoothnessStartDifference", this.SimulationSettings.SmoothnessStartDifference);
                 ExecutionEngine.PutVariable(prefix + "ResponsivenessClose", this.SimulationSettings.ResponsivenessClose);
+
+                // add scripts to path
+                ExecutionEngine.ExecuteCommand("addpath(strcat(CT_ScriptsPath, '\\ModelExecution'));");
+                ExecutionEngine.ExecuteCommand("addpath(strcat(CT_ScriptsPath, '\\RandomExploration'));");
+                ExecutionEngine.ExecuteCommand("addpath(strcat(CT_ScriptsPath, '\\SingleStateSearch'));");
+
+                ExecutionEngine.ChangeWorkingFolder(tempPath);
 
                 setupDone = true;
             }
@@ -152,7 +163,7 @@ namespace FM4CC.FaultModels.Step
         {
             IDictionary<string, object> input = testCase.Input;
             SetTestRunParameters((double)input["Initial"], (double)input["Final"]);
-            return (bool)ExecuteSimulationRun();
+            return ((string)ExecuteSimulationRun()).ToLower().Contains("success");
         }
 
 
@@ -165,7 +176,7 @@ namespace FM4CC.FaultModels.Step
 
 #endregion
 
-        #region Two Steps Fault Model
+        #region Step Fault Model
         
         public BackgroundWorker RandomExplorationWorker { get; protected set; }
         public BackgroundWorker WorstCaseWorker { get; protected set; }
@@ -187,15 +198,11 @@ namespace FM4CC.FaultModels.Step
         private object ExecuteSimulationRun()
         {
             if (setupDone)
-            {
-                ExecutionEngine.ChangeWorkingFolder(scriptsPath + "\\ModelExecution");
-                
+            {               
                 ExecutionEngine.PutVariable(prefix + "InitialDesiredValue", initial);
                 ExecutionEngine.PutVariable(prefix + "DesiredValue", final);
 
-                string message = ExecutionEngine.ExecuteCommand("StepModelExecution");
-                
-                return message.ToLower().Contains("success");
+                return ExecutionEngine.ExecuteCommand("StepModelExecution");
             }
             else throw new InvalidOperationException("Setup not performed");
         }
@@ -208,8 +215,6 @@ namespace FM4CC.FaultModels.Step
         {
             if (setupDone)
             {
-                ExecutionEngine.ChangeWorkingFolder(scriptsPath + "\\RandomExploration");
-
                 return ExecutionEngine.ExecuteCommand("RandomExploration_Step");
             }
             else throw new InvalidOperationException("Setup not performed");
@@ -224,7 +229,7 @@ namespace FM4CC.FaultModels.Step
                 coreCount += int.Parse(item["NumberOfCores"].ToString());
             }
 
-            double time = SimulationSettings.ModelRunningTime * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("PointsPerRegion") / (double)coreCount;
+            double time = 2 * SimulationSettings.ModelRunningTime * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("Regions") * (double)this.FaultModelConfiguration.GetValue("PointsPerRegion") / (double)coreCount + SimulationSettings.ModelRunningTime * Math.Ceiling(4 / (double)coreCount);
 
             TimeSpan result = new TimeSpan(0, 0, (int)(time));
             return result;
@@ -239,14 +244,12 @@ namespace FM4CC.FaultModels.Step
         {
             if (setupDone)
             {
-                ExecutionEngine.ChangeWorkingFolder(scriptsPath + "\\SingleStateSearch");
-
                 return ExecutionEngine.ExecuteCommand("SingleStateSearch_Step");
             }
             else throw new InvalidOperationException("Setup not performed");
         }
 
-        public void SetSearchParameters(int requirement, int regionX, int regionY, HeatPoint startPoint)
+        public void SetSearchParameters(int requirement, int regionX, int regionY, HeatPoint startPoint, string optimizationAlgorithm)
         {
             if (setupDone)
             {
@@ -255,6 +258,16 @@ namespace FM4CC.FaultModels.Step
                 ExecutionEngine.PutVariable(prefix + "RegionYIndex", (double)regionY);
 
                 ExecutionEngine.PutVariable(prefix + "StartPoint", new double[] {startPoint.X, startPoint.Y});
+
+                ExecutionEngine.PutVariable(prefix + "ModelQuality", SimulationSettings.RegressionSettings.ModelQuality);
+
+                ExecutionEngine.PutVariable(prefix + "RefinedCandidatePoints", SimulationSettings.RegressionSettings.RefinedCandidatePoints);
+                ExecutionEngine.PutVariable(prefix + "RefinementPoints", SimulationSettings.RegressionSettings.RefinementPoints);
+
+                ExecutionEngine.PutVariable(prefix + "TrainingSetSizeEqualDistance", SimulationSettings.RegressionSettings.TrainingSetSizeEqualDistance);
+                ExecutionEngine.PutVariable(prefix + "TrainingSetSizeRandom", SimulationSettings.RegressionSettings.TrainingSetSizeRandom);
+                ExecutionEngine.PutVariable(prefix + "ValidationSetSize", SimulationSettings.RegressionSettings.ValidationSetSize);
+                ExecutionEngine.PutVariable(prefix + "OptimizationAlgorithm", optimizationAlgorithm);
             }
         }
      

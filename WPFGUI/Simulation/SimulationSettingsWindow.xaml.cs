@@ -29,7 +29,7 @@ namespace FM4CC.WPFGUI.Simulation
         public SimulationSettingsWindow(SimulationSettings settings, FMTesterConfiguration configuration, ExecutionInstance instance, ExecutionEnvironment environment)
         {
             InitializeComponent();
-
+            this.EnableDWMDropShadow = true;
             this.ShowMinButton = false;
             this.ShowMaxRestoreButton = false;
 

@@ -4,18 +4,22 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FM4CC.FaultModels.Step
 {
-    public class TestRunWorker: BackgroundWorker
+    internal class TestRunWorker: BackgroundWorker
     {
-        public double InitialDesired { get; set; }
-        public double FinalDesired { get; set; }
+        internal FM4CCException Exception { get; set; }
 
-        public TestRunWorker()
+        internal double InitialDesired { get; set; }
+        internal double FinalDesired { get; set; }
+
+        internal TestRunWorker()
         {
+            this.Exception = null;
             this.InitialDesired = 0;
             this.FinalDesired = 0;
             this.WorkerReportsProgress = true;
@@ -24,31 +28,41 @@ namespace FM4CC.FaultModels.Step
 
         private void testRunWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            bool result = true;
-            StepFaultModel fm = e.Argument as StepFaultModel;
+            try
+            {
+                this.Exception = null;
+                StepFaultModel fm = e.Argument as StepFaultModel;
 
-            fm.ExecutionEngine.AcquireProcess();
-                
-            // Sets up the environment of the execution engine
-            fm.SetUpEnvironment();
+                fm.ExecutionEngine.AcquireProcess();
 
-            fm.SetTestRunParameters(InitialDesired, FinalDesired);
-            result = (bool)fm.Run("TestRun");
+                // Sets up the environment of the execution engine
+                fm.SetUpEnvironment();
 
-            // Tears down the environment
-            fm.TearDownEnvironment(false);
+                fm.SetTestRunParameters(InitialDesired, FinalDesired);
+                string message = (string)fm.Run("TestRun");
 
-            // Relinquishes control of the execution engine
-            fm.ExecutionEngine.RelinquishProcess();
+                // Tears down the environment
+                fm.TearDownEnvironment(false);
 
-            if (!result)
+                // Relinquishes control of the execution engine
+                fm.ExecutionEngine.RelinquishProcess();
+
+                if (message.ToLower().Contains("success"))
+                {
+                    e.Result = true;
+                }
+                else
+                {
+                    e.Result = false;
+                    this.Exception = new FM4CCException(message);
+                }
+
+                this.ReportProgress(100);
+            }
+            catch(TargetInvocationException)
             {
                 e.Result = false;
-                throw new FM4CCException("Failed to run the model");
             }
-
-            this.ReportProgress(100);
-            e.Result = true;
         }
     }
 }

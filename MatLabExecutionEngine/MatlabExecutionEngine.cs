@@ -14,14 +14,17 @@ namespace FM4CC.ExecutionEngine.Matlab
 
     public class MatlabExecutionEngine : ExecutionEnvironment, IObserver<bool>
     {
+        public static string Path { get; set; }
+
         private MatlabProcessContainer matlabProcess;
         private bool owningProcess;
         private WeakReference<Object> matlabApp;
         private System.Threading.EventWaitHandle eventWaitHandle;
         private GCHandle rcwHandle;
 
-        public MatlabExecutionEngine()
+        public MatlabExecutionEngine(string path)
         {
+            Path = path;
             matlabApp = null;
             matlabProcess = null;
             owningProcess = false;

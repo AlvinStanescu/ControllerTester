@@ -74,7 +74,8 @@
                 >
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="Analyze" Width="80" Binding="{Binding Analyze}" CanUserSort="False" x:Name="AnalyzeDataGridColumn"></DataGridCheckBoxColumn>
-                    <DataGridTextColumn Header="Worst Objective Function" IsReadOnly="True" Binding="{Binding Intensity}" SortDirection="Descending"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Mean Objective Function" IsReadOnly="True" Binding="{Binding Intensity}" SortDirection="Descending"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Worst Objective Function" IsReadOnly="True" Binding="{Binding WorstIntensity}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Initial Desired" IsReadOnly="True" Binding="{Binding InitialDesired}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Final Desired" IsReadOnly="True" Binding="{Binding FinalDesired}"></DataGridTextColumn>
                     <DataGridTextColumn Header="Region Initial Desired" IsReadOnly="True" Binding="{Binding InitialDesiredRegion}"></DataGridTextColumn>

@@ -70,6 +70,7 @@
     <Compile Include="FM4CCException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExecutionEngine\Process\UniqueProcessContainer.cs" />
+    <Compile Include="Simulation\ModelRegressionSettings.cs" />
     <Compile Include="TestCase\FaultModelTesterTestCase.cs" />
     <Compile Include="Util\Effects\AddativeBlendClear.cs">
       <Generator>ShaderEffectGenerator</Generator>
@@ -78,20 +79,19 @@
       <Generator>ShaderEffectGenerator</Generator>
     </Compile>
     <Compile Include="Util\HeatMapControlBase.cs" />
+    <Compile Include="Util\ObjectiveFunctionValueParser.cs" />
     <Compile Include="Util\RadialHeatMapControl.xaml.cs">
       <DependentUpon>RadialHeatMapControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\HeatMapDataSource.cs" />
     <Compile Include="Util\HeatPoint.cs" />
-    <Compile Include="Util\ProgressWindow.xaml.cs">
-      <DependentUpon>ProgressWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\RegionHeatMapControl.xaml.cs">
       <DependentUpon>RegionHeatMapControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\SerializableDictionary.cs" />
     <Compile Include="Simulation\SimulationParameter.cs" />
     <Compile Include="Simulation\SimulationSettings.cs" />
+    <Compile Include="Util\ShowWindowCommands.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -121,10 +121,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Util\RadialHeatMapControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Util\ProgressWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

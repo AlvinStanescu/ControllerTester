@@ -11,6 +11,7 @@
         MinWidth="525"
         MinHeight="500" 
         Loaded="MetroWindow_Loaded"
+        Closing="MetroWindow_Closing"
         BorderThickness="1"
         >
 
@@ -75,6 +76,7 @@
                     <RibbonApplicationMenuItem Header="New Project..." ImageSource="Resources\Icons\new_project.png" Click="NewTestProject_Click"/>
                     <RibbonApplicationMenuItem Header="Open Project..." ImageSource="Resources\Icons\open_project.png" Click="OpenTestProject_Click"  />
                     <RibbonApplicationMenuItem IsEnabled="False" x:Name="SaveProjectMenuItem" Header="Save Project..." ImageSource="Resources\Icons\save_project.png" Click="SaveTestProject_Click" />
+                    <RibbonApplicationMenuItem IsEnabled="False" x:Name="SaveProjectAsMenuItem" Header="Save Project As..." ImageSource="Resources\Icons\save_project.png" Click="SaveTestProjectAs_Click" />
                     <RibbonApplicationMenuItem IsEnabled="False" x:Name="CloseProjectMenuItem" Header="Close Project" ImageSource="Resources\Icons\exit.png" Click="CloseTestProject_Click" />
                     <RibbonApplicationMenuItem Header="Preferences" ImageSource="Resources\Icons\settings.png" Click="Settings_Click" />
                     <RibbonApplicationMenuItem Header="Exit" ImageSource="Resources\Icons\exit.png" Click="Exit_Click" />
@@ -95,9 +97,9 @@
                 </RibbonGroup>
 
                 <!-- Test Case Execution group-->
-                <RibbonGroup Name="TestCaseExecutionGroup" Header="Test Case Execution" IsEnabled="False" Width="300">
+                <RibbonGroup Name="TestCaseExecutionGroup" Header="Test Case Execution" IsEnabled="False" Width="450">
                     <RibbonButton LargeImageSource="Resources\Icons\run.png" Label="Execute" KeyTip="X" Click="Execute_Clicked" />
-                    <ComboBox x:Name="ComboBoxTestCases" ItemsSource="{Binding}" Width="230" SelectionChanged="cbTestCases_SelectionChanged" MaxDropDownHeight="1024"></ComboBox>
+                    <ComboBox x:Name="ComboBoxTestCases" ItemsSource="{Binding}" Width="380" SelectionChanged="cbTestCases_SelectionChanged" MaxDropDownHeight="1024"></ComboBox>
                 </RibbonGroup>
 
                 <!-- Test Case Info group-->

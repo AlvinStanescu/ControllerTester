@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace FM4CC.Simulation
 {
-    public enum SimulationParameterType { Actual, Desired, Configuration };
+    public enum SimulationParameterType { Actual, Desired, Disturbance, Configuration };
 
     public class SimulationParameter
     {

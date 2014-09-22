@@ -12,16 +12,19 @@ using System.Timers;
 namespace FM4CC.FaultModels.Step
 {
 
-    public class RandomExplorationWorker : BackgroundWorker
+    internal class RandomExplorationWorker : BackgroundWorker
     {
+        internal FM4CCException Exception { get; set; }
+
         private static System.Timers.Timer aTimer;
         private double estimatedDuration;
         private double passedDuration;
         private StepFaultModel fm;
         private bool isRunning;
 
-        public RandomExplorationWorker()
+        internal RandomExplorationWorker()
         {
+            this.Exception = null;
             this.WorkerReportsProgress = true;
             this.WorkerSupportsCancellation = true;
             this.DoWork += generationWorker_DoWork;
@@ -31,6 +34,7 @@ namespace FM4CC.FaultModels.Step
         {
             try
             {
+                this.Exception = null;
                 isRunning = false;
                 fm = e.Argument as StepFaultModel;
                 ExecutionInstance currentTestProject = fm.ExecutionInstance;
@@ -60,13 +64,15 @@ namespace FM4CC.FaultModels.Step
                 fm.ExecutionEngine.RelinquishProcess();
                 aTimer.Enabled = false;
 
-                if (!message.ToLower().Contains("success"))
+                if (message.ToLower().Contains("success"))
+                {
+                    e.Result = true;
+                }
+                else
                 {
                     e.Result = false;
-                    throw new FM4CCException(message);
+                    this.Exception = new FM4CCException(message);
                 }
-
-                e.Result = true;
             }
             catch(TargetInvocationException)
             {

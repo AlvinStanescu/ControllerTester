@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace FM4CC.Environment
 {
-    public interface IValidatable
+    public interface IConfigurationControl
     {
+        void Save();
         bool Validate();
     }
 }

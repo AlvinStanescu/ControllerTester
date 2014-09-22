@@ -2,6 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="Simulation Settings" Height="560" Width="730">
+        Title="Simulation Settings" Height="520" Width="730">
     <StackPanel Name="Container" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 </Controls:MetroWindow>

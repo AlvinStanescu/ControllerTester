@@ -10,6 +10,7 @@
 addpath(CT_ModelPath);
 addpath(strcat(CT_ScriptsPath, '\ModelExecution'));
 addpath(strcat(CT_ScriptsPath, '\ObjectiveFunctions'));
+addpath(strcat(CT_ScriptsPath, '\Regression'));
 addpath(strcat(CT_ScriptsPath, '\Util'));
 
 % begin logging 
@@ -18,6 +19,7 @@ try
     % configure the static model configuration parameters and load the
     % model into the system memory
     load_system(CT_ModelFile);
+    CT_CheckCorrectOutput(CT_ActualVariableName);
     run(CT_ModelConfigurationFile);
     % double the model simulation time set in the GUI because we need two values for the step fault model
     simulationTime = CT_ModelSimulationTime * 2;
@@ -26,7 +28,7 @@ try
     % retrieve the model simulation step, as it might have been changed by
     % the configuration script
     CT_ModelTimeStep = CT_GetSimulationTimeStep();
-    CT_SimulationSteps=int64(simulationTime/CT_ModelTimeStep);
+    CT_SimulationSteps=simulationTime/CT_ModelTimeStep;
     
     % compute the region bounds
     RegionXStart = CT_DesiredValueRangeStart + ((CT_DesiredValueRangeEnd - CT_DesiredValueRangeStart)/CT_Regions) * CT_RegionXIndex;
@@ -37,9 +39,18 @@ try
     
     % convert the problem to a minimization problem for use with the
     % (global) optimization toolbox
-    hSimulation = @(p)(-1*SimulateModelStep(CT_ModelFile, p(1), p(2), CT_ActualValueRangeStart, CT_ActualValueRangeEnd, CT_MaxObjectiveFunctionIndex, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile));
+    hSimulation = @(p)(-1*SimulateModelStep(CT_ModelFile, p(1), p(2), CT_ActualValueRangeStart, CT_ActualValueRangeEnd, CT_MaxObjectiveFunctionIndex, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_DisturbanceVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile));
     lb = [RegionXStart, RegionYStart];
     ub = [RegionXEnd, RegionYEnd];
+    
+    % build the model if needed
+    if (CT_ModelConfigurationFile)
+        evalin('base', strcat('run(''',CT_ModelConfigurationFile,''')'));
+    end
+    assignin('base', CT_DesiredVariableName, CT_GenerateStepSignal(CT_SimulationSteps, CT_ModelTimeStep, 0, 0, CT_ModelSimulationTime));
+    assignin('base', CT_DisturbanceVariableName, CT_GenerateConstantSignal(1, CT_SimulationSteps*CT_ModelTimeStep, 0));
+    accelbuild(gcs);
+    error = false;
     
     switch CT_OptimizationAlgorithm 
         case 'SimulatedAnnealing'
@@ -101,8 +112,10 @@ try
 
     end
     
-    SingleStateSearch_Step_SaveResults(p, objectiveFunctionValue, CT_TempPath);
-    display('Successful termination of the random exploration process.');
+    if ~error
+	    SingleStateSearch_Step_SaveResults(p, objectiveFunctionValue, CT_TempPath);
+        display('Successful termination of the random exploration process.');
+    end
     diary off;
 catch e
     display('Error during random exploration: ');

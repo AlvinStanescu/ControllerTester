@@ -1,10 +1,10 @@
-function [ ExplorationResults ] = RandomExploration_Step_SaveResults(DesiredValues, ObjectiveFunctionValues, TotalRegions, PointsPerRegion, TempPath)
+function [ ExplorationResults ] = RandomExploration_Step_SaveResults(DesiredValues, ObjectiveFunctionValues, LimitDesiredValues, LimitObjectiveFunctionValues, TotalRegions, PointsPerRegion, TempPath)
     % generates a file containing all the points found and a file
     % containing a processed view of the input space
-    ExplorationResults = zeros(PointsPerRegion*TotalRegions, 9);
+    ExplorationResults = zeros(PointsPerRegion*TotalRegions+4, 9);
     
     for RegionCnt = 1 : TotalRegions
-        for PointCnt = 1:PointsPerRegion
+        for PointCnt = 1 : PointsPerRegion
             ExplorationResults(PointCnt + PointsPerRegion * (RegionCnt-1), 1) = DesiredValues(RegionCnt, PointCnt, 1);
             ExplorationResults(PointCnt + PointsPerRegion * (RegionCnt-1), 2) = DesiredValues(RegionCnt, PointCnt, 2);
             ExplorationResults(PointCnt + PointsPerRegion * (RegionCnt-1), 3) = ObjectiveFunctionValues(RegionCnt, PointCnt, 1);
@@ -14,8 +14,22 @@ function [ ExplorationResults ] = RandomExploration_Step_SaveResults(DesiredValu
             ExplorationResults(PointCnt + PointsPerRegion * (RegionCnt-1), 7) = ObjectiveFunctionValues(RegionCnt, PointCnt, 5);
             ExplorationResults(PointCnt + PointsPerRegion * (RegionCnt-1), 8) = ObjectiveFunctionValues(RegionCnt, PointCnt, 6);
             ExplorationResults(PointCnt + PointsPerRegion * (RegionCnt-1), 9) = ObjectiveFunctionValues(RegionCnt, PointCnt, 7);
-
         end
+    end
+
+    % add limit test cases
+    indexStart = PointsPerRegion * TotalRegions + 1;
+    for i = indexStart : indexStart + 3
+        iLim = i - PointsPerRegion * TotalRegions;
+        ExplorationResults(i, 1) = LimitDesiredValues(iLim, 1);
+        ExplorationResults(i, 2) = LimitDesiredValues(iLim, 2);
+        ExplorationResults(i, 3) = LimitObjectiveFunctionValues(iLim, 1);
+        ExplorationResults(i, 4) = LimitObjectiveFunctionValues(iLim, 2);
+        ExplorationResults(i, 5) = LimitObjectiveFunctionValues(iLim, 3);
+        ExplorationResults(i, 6) = LimitObjectiveFunctionValues(iLim, 4);
+        ExplorationResults(i, 7) = LimitObjectiveFunctionValues(iLim, 5);
+        ExplorationResults(i, 8) = LimitObjectiveFunctionValues(iLim, 6);
+        ExplorationResults(i, 9) = LimitObjectiveFunctionValues(iLim, 7);
     end
     
     
@@ -63,9 +77,48 @@ function [ ExplorationResults ] = RandomExploration_Step_SaveResults(DesiredValu
                         RegionWorstIndexes(RegionXCnt, RegionYCnt, ObjectiveFncCnt, 2) = DesiredValues(RegionYCnt+(RegionXCnt-1)*RegionsPerAxis, PointCnt, 2);
                     end
                 end
-                
-                % finish calculating the mean
-                RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) = RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) / PointsPerRegion;
+
+                limitTestCase = 0;
+                % add limit test cases
+                if RegionXCnt == 1 && RegionYCnt == 1
+                    % bottom left region
+                    limitTestCase = 1;
+                else
+                    if RegionXCnt == 1 && RegionYCnt == RegionsPerAxis
+                        % top left region
+                        limitTestCase = 2;
+                    else
+                        if RegionXCnt == RegionsPerAxis && RegionYCnt == 1
+                            % bottom right region
+                            limitTestCase = 3;
+                        else
+                            if RegionXCnt == RegionsPerAxis && RegionYCnt == RegionsPerAxis
+                                % top right region
+                                limitTestCase = 4;
+                            end
+                        end
+                    end
+                end
+                                
+                if limitTestCase == 0
+                    % finish calculating the mean
+                    RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) = RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) / PointsPerRegion;
+                else
+                    % add limit test cases
+                    if (LimitObjectiveFunctionValues(limitTestCase, 7) == 1)
+                        RegionPhysicalRangeExceeded(RegionXCnt, RegionYCnt) = 1;
+                    end
+                    val = LimitObjectiveFunctionValues(limitTestCase, ObjectiveFncCnt);
+                    RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) = RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) + val;
+                    if (val > RegionWorstValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt))
+                        RegionWorstValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) = val;
+                        RegionWorstIndexes(RegionXCnt, RegionYCnt, ObjectiveFncCnt, 1) = LimitDesiredValues(limitTestCase, 1);
+                        RegionWorstIndexes(RegionXCnt, RegionYCnt, ObjectiveFncCnt, 2) = LimitDesiredValues(limitTestCase, 2);
+                    end
+                    % calculate the mean
+                    RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) = RegionMeanValues(RegionXCnt, RegionYCnt, ObjectiveFncCnt) / (PointsPerRegion + 1);
+                end
+
             end
         end
     end

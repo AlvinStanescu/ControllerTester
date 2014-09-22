@@ -1,13 +1,12 @@
 %% checks for responsiveness by computing the time it takes for the actual value to w at x% of the desired value
-function [ResponsivenessValue] = ObjectiveFunction_Responsiveness(ActualValues, DesiredValue, SimulationStepSize, indexStart, responsivenessClose)
-    ResponsivenessValue = 0;
-    indexFinal = length(ActualValues);
+function [ResponsivenessValue] = ObjectiveFunction_Responsiveness(actualValue, DesiredValue, indexStart, responsivenessClose)
+    indexFinal = length(actualValue.signals.values);
 
-    for i = indexStart : indexFinal
-        if (abs(DesiredValue - ActualValues(i)) <= responsivenessClose)
+    for ResponsivenessIndex = indexStart : indexFinal
+        if (abs(DesiredValue - actualValue.signals.values(ResponsivenessIndex)) <= responsivenessClose)
             break            
         end
-        ResponsivenessValue = ResponsivenessValue + SimulationStepSize;
     end
+    ResponsivenessValue = actualValue.time(ResponsivenessIndex) - actualValue.time(indexStart);
 
 end

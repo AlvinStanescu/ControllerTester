@@ -1,10 +1,10 @@
 %% checks whether the physical range of the plant was exceeded
-function [PhysicalRangeExceeded] = ObjectiveFunction_PhysicalRange(ActualValues, rangeStart, rangeEnd)
+function [PhysicalRangeExceeded] = ObjectiveFunction_PhysicalRange(actualValue, rangeStart, rangeEnd)
     PhysicalRangeExceeded = 0;    
-    indexFinal = length(ActualValues);
+    indexFinal = length(actualValue.signals.values);
 
     for i = 1 : indexFinal
-        if (ActualValues(i) > rangeEnd || ActualValues(i) < rangeStart)
+        if (actualValue.signals.values(i) > rangeEnd || actualValue.signals.values(i) < rangeStart)
             PhysicalRangeExceeded = 1;
         end
     end

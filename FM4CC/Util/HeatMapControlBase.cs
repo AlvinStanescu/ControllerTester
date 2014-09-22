@@ -55,7 +55,7 @@ namespace FM4CC.Util.Heatmap
         protected virtual void CreateGrid(Grid heatmapGrid)
         {
             ColumnDefinition headerColumn = new ColumnDefinition();
-            headerColumn.Width = new GridLength(30);
+            headerColumn.Width = new GridLength(60);
             heatmapGrid.ColumnDefinitions.Add(headerColumn);
 
             for (int i = 0; i < HeatMapSource.Columns; ++i)
@@ -116,7 +116,7 @@ namespace FM4CC.Util.Heatmap
                 lbl.FontSize = 12;
                 lbl.FontFamily = new FontFamily("Segoe UI");
 
-                lbl.Content = ((HeatMapSource.ColumnToValue - HeatMapSource.ColumnFromValue) / HeatMapSource.Columns * i).ToString();
+                lbl.Content = (HeatMapSource.ColumnFromValue + (HeatMapSource.ColumnToValue - HeatMapSource.ColumnFromValue) / HeatMapSource.Columns * i).ToString();
                 
                 lbl.Background = Brushes.Transparent;
 
@@ -151,7 +151,7 @@ namespace FM4CC.Util.Heatmap
                 lbl.FontSize = 12;
                 lbl.FontFamily = new FontFamily("Segoe UI");
 
-                lbl.Content = ((HeatMapSource.RowToValue- HeatMapSource.RowFromValue) / HeatMapSource.Rows * (HeatMapSource.Rows - i)).ToString();
+                lbl.Content = (HeatMapSource.RowFromValue + (HeatMapSource.RowToValue - HeatMapSource.RowFromValue) / HeatMapSource.Rows * (HeatMapSource.Rows - i)).ToString();
 
                 lbl.Background = Brushes.Transparent;
 

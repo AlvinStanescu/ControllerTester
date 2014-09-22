@@ -11,11 +11,13 @@ namespace FM4CC.FaultModels.Step
 {
     internal class DataGridHeatPoint : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private double _baseUnit;
         private StepHeatPoint _containedHeatPoint;
-        private Button _button;
         private bool _analyze;
-        public event PropertyChangedEventHandler PropertyChanged;
+        private double _desiredMax;
+        private double _desiredMin;
 
         public bool PhysicalRangeExceeded 
         {
@@ -45,6 +47,16 @@ namespace FM4CC.FaultModels.Step
                 RaisePropertyChanged("Analyze");
             }
         }
+
+        public double WorstIntensity
+        {
+            get
+            {
+                return _containedHeatPoint.WorstIntensity;
+            }
+        }
+
+
         public double Intensity 
         { 
             get 
@@ -57,7 +69,18 @@ namespace FM4CC.FaultModels.Step
         {
             get
             {
-                return (int)(_containedHeatPoint.X / _baseUnit);
+                if (_containedHeatPoint.X == _desiredMin)
+                {
+                    return 0;
+                }
+                else if (_containedHeatPoint.X == _desiredMax)
+                {
+                    return (int)((_containedHeatPoint.X - _desiredMin) / _baseUnit) - 1;
+                }
+                else
+                {
+                    return (int)((_containedHeatPoint.X - _desiredMin) / _baseUnit);
+                }
             }
         }
 
@@ -65,7 +88,18 @@ namespace FM4CC.FaultModels.Step
         {
             get
             {
-                return (int)(_containedHeatPoint.Y / _baseUnit);
+                if (_containedHeatPoint.Y == _desiredMin)
+                {
+                    return 0;
+                }
+                else if (_containedHeatPoint.Y == _desiredMax)
+                {
+                    return (int)((_containedHeatPoint.Y - _desiredMin) / _baseUnit) - 1;
+                }
+                else
+                {
+                    return (int)((_containedHeatPoint.Y - _desiredMin) / _baseUnit);
+                }
             }
         }
 
@@ -85,19 +119,6 @@ namespace FM4CC.FaultModels.Step
             }
         }
 
-        public Button RunButton 
-        {
-            get
-            {
-                return _button;
-            }
-
-            private set 
-            {
-                _button = value;
-            }
-        }
-
         public string Requirement { get; set; }
 
         public double BaseUnit
@@ -108,9 +129,11 @@ namespace FM4CC.FaultModels.Step
             }
         }
 
-        public DataGridHeatPoint(StepHeatPoint hp, double baseUnit, string requirement)
+        public DataGridHeatPoint(StepHeatPoint hp, double baseUnit, double desiredMin, double desiredMax, string requirement)
         {
             this.Requirement = requirement;
+            _desiredMin = desiredMin;
+            _desiredMax = desiredMax;
             _baseUnit = baseUnit;
             _containedHeatPoint = hp;
             _analyze = true;

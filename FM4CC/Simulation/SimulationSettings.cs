@@ -17,9 +17,10 @@ namespace FM4CC.Simulation
         public double ResponsivenessClose { get; set; }
         public SimulationParameter DesiredVariable { get; set; }
         public SimulationParameter ActualVariable { get; set; }
-                
+        public SimulationParameter DisturbanceVariable { get; set; }
+        public ModelRegressionSettings RegressionSettings { get; set; }
 
-        public SimulationSettings(double modelSimTime, double stableStartTime, double startDiff, double respClose, SimulationParameter desired, SimulationParameter actual)
+        public SimulationSettings(double modelSimTime, double stableStartTime, double startDiff, double respClose, SimulationParameter desired, SimulationParameter actual, SimulationParameter disturbance, ModelRegressionSettings regressionSettings)
         {
             this.ModelSimulationTime = modelSimTime;
             this.StableStartTime = stableStartTime;
@@ -27,11 +28,14 @@ namespace FM4CC.Simulation
             this.ResponsivenessClose = respClose;
             this.DesiredVariable = desired;
             this.ActualVariable = actual;
+            this.DisturbanceVariable = disturbance;
+            this.RegressionSettings = regressionSettings;
         }
 
         public SimulationSettings()
         {
-
+            DisturbanceVariable = new SimulationParameter("",SimulationParameterType.Disturbance, 0, 0);
+            RegressionSettings = new ModelRegressionSettings();
         }
 
     }

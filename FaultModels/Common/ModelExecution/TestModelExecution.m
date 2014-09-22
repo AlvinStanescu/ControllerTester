@@ -6,10 +6,12 @@ try
     addpath(CT_ModelPath);
     addpath(strcat(CT_ScriptsPath, '/ObjectiveFunctions'));
     addpath(strcat(CT_ScriptsPath, '/Util'));
+
     % configure the static model configuration parameters and load the
     % model into the system memory
-    run(CT_ModelConfigurationFile);
     load_system(CT_ModelFile);
+    CT_CheckCorrectOutput(CT_ActualVariableName);
+    run(CT_ModelConfigurationFile);
 
     % double the model simulation time set in the GUI because we need two values for the step fault model
     simulationTime = CT_ModelSimulationTime * 2;
@@ -17,16 +19,25 @@ try
     % retrieve the model simulation step, as it might have been changed by
     % the configuration script
     CT_ModelTimeStep = CT_GetSimulationTimeStep();
-    CT_SimulationSteps=int64(CT_ModelSimulationTime/CT_ModelTimeStep);
+    CT_SimulationSteps=simulationTime/CT_ModelTimeStep;
            
     % pre-allocate space
 	ObjectiveFunctionValues = zeros(7,1);
-
+    
+    % build the model if needed
+    if (CT_ModelConfigurationFile)
+        evalin('base', strcat('run(''',CT_ModelConfigurationFile,''')'));
+    end
+    
+    assignin('base', CT_DesiredVariableName, CT_GenerateStepSignal(CT_SimulationSteps, CT_ModelTimeStep, 0, 0, CT_ModelSimulationTime));
+    assignin('base', CT_DisturbanceVariableName, CT_GenerateConstantSignal(1, CT_SimulationSteps*CT_ModelTimeStep, 0));
+    accelbuild(gcs);
+    
     % start the timer to measure the running time of the model together
     % with the objective function computation
     tic;
     % generate the time for the desired value  
-    assignin('base', CT_DesiredVariableName, CT_GenerateStepDesiredValue(CT_SimulationSteps, CT_ModelTimeStep, CT_InitialDesiredValue, CT_DesiredValue));
+    assignin('base', CT_DesiredVariableName, CT_GenerateStepSignal(CT_SimulationSteps, CT_ModelTimeStep, CT_InitialDesiredValue, CT_DesiredValue, CT_ModelSimulationTime));
             
     % run the simulation in accelerated mode
     if (CT_AccelerationDisabled)
@@ -35,15 +46,21 @@ try
         simOut = sim(CT_ModelFile, 'SimulationMode', 'accelerator', 'SaveOutput','on');
     end
 
-    actualValue = simOut.get(CT_ActualVariableName);
-            
+    actualValue = simOut.get(CT_ActualVariableName);    
+    
+    % get the starting index for stability, precision and steadiness
+    indexStableStart = CT_GetIndexForTimeStep(actualValue.time, CT_ModelSimulationTime + CT_TimeStable);
+    % get the starting index for smoothness and responsiveness
+    indexMidStart = CT_GetIndexForTimeStep(actualValue.time, CT_ModelSimulationTime);
+
+    
     % calculate the objective functions
-    ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
-    ObjectiveFunctionValues(2) = ObjectiveFunction_Precision(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
-    ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, CT_DesiredValue, CT_SimulationSteps/2 + 1, CT_SmoothnessStartDifference);
-    ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_SimulationSteps/2 + 1, CT_ResponsivenessClose);
-    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Steadiness(actualValue.signals.values, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
-    ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue.signals.values, CT_ActualValueRangeStart, CT_ActualValueRangeEnd);
+    ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue, indexStableStart);
+    ObjectiveFunctionValues(2) = ObjectiveFunction_Precision(actualValue, CT_DesiredValue, indexStableStart);
+    ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue, CT_DesiredValue, indexMidStart, CT_SmoothnessStartDifference);
+    ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue, CT_DesiredValue, indexMidStart, CT_ResponsivenessClose);
+    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Steadiness(actualValue, indexStableStart);
+    ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue, CT_ActualValueRangeStart, CT_ActualValueRangeEnd);
                        
     % stop the timer
     duration = toc;

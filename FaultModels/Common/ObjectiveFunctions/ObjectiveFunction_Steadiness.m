@@ -1,24 +1,23 @@
-% calculates the oscillation in actual value after tStable
-function [Oscillation, MeanStableValue] = ObjectiveFunction_Steadiness(ActualValues, SimulationStepSize, tStable)
-    valuesCnt = length(ActualValues);
-    MinValue = ActualValues(valuesCnt);
-    MaxValue = ActualValues(valuesCnt);
+% calculates the max. oscillation in the actual value after tStable
+function [Steadiness, MeanStableValue] = ObjectiveFunction_Steadiness(actualValue, indexStart)   
+    valuesCnt = length(actualValue.signals.values);
+    MinValue = actualValue.signals.values(valuesCnt);
+    MaxValue = actualValue.signals.values(valuesCnt);
     MeanValue = 0;
     
-    indexStart = valuesCnt - round(valuesCnt-tStable/SimulationStepSize);
     indexEnd = valuesCnt;
     
     for i = indexStart : indexEnd
-        MeanValue = MeanValue + ActualValues(i);
-        if (ActualValues(i) > MaxValue)
-            MaxValue = ActualValues(i);
+        MeanValue = MeanValue + actualValue.signals.values(i);
+        if (actualValue.signals.values(i) > MaxValue)
+            MaxValue = actualValue.signals.values(i);
         end
-        if (ActualValues(i) < MinValue)
-            MinValue = ActualValues(i);
+        if (actualValue.signals.values(i) < MinValue)
+            MinValue = actualValue.signals.values(i);
         end
     end
     MeanValue = MeanValue / (indexEnd - indexStart + 1);
     
     MeanStableValue = MeanValue;
-    Oscillation = max(abs(MeanValue-MinValue)/MeanValue, abs(MeanValue-MaxValue)/MeanValue);
+    Steadiness = MaxValue - MinValue;
 end

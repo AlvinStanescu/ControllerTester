@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="340" d:DesignWidth="340">
     <StackPanel Orientation="Vertical">
-        <GroupBox Header="Simulation configuration" Height="230" VerticalAlignment="Top">
+        <GroupBox Header="Simulation configuration" Height="250" VerticalAlignment="Top">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130"/>
@@ -30,6 +30,7 @@
                     <CheckBox Margin="0,3,0,3" x:Name="SmoothnessCheckBox">Smoothness</CheckBox>
                     <CheckBox Margin="0,3,0,3" x:Name="ResponsivenessCheckBox">Responsiveness</CheckBox>
                     <CheckBox Margin="0,3,0,3" x:Name="SteadinessCheckBox">Steadiness</CheckBox>
+                    <CheckBox Margin="0,3,0,3" x:Name="NormalizedSmoothnessCheckBox">NormalizedSmoothness</CheckBox>
                 </StackPanel>
 
             </Grid>

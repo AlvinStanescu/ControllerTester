@@ -76,7 +76,17 @@ namespace FM4CC.FaultModels.Step.GUI
 
             if (((bool)e.Result) == false)
             {
-                MessageBox.Show("Failed to run the model, an unexpected error occurred.", "Model run", MessageBoxButton.OK, MessageBoxImage.Error);
+                Exception exception = (this.faultModel.TestRunWorker as TestRunWorker).Exception;
+                if (exception != null)
+                {
+                    log("Step Fault Model - Test case failed to run.");
+                    await this.ShowMessageAsync("Test case failed to run", "The test case run failed with error:\r\n\r\n" + exception.Message, MessageDialogStyle.Affirmative);
+                }
+                else
+                {
+                    log("Step Fault Model - Test case failed to run due to a problem with the execution environment.");
+                    await this.ShowMessageAsync("Test case failed to run", "Test case failed to run due to a problem with the execution environment.", MessageDialogStyle.Affirmative);
+                }
             }
         }
 
@@ -94,7 +104,17 @@ namespace FM4CC.FaultModels.Step.GUI
             }
             else
             {
-                log("Step Fault Model - Random exploration stopped");
+                Exception exception = (this.faultModel.RandomExplorationWorker as RandomExplorationWorker).Exception;
+
+                if (exception != null)
+                {
+                    log("Step Fault Model - Random exploration failed to run");
+                    await this.ShowMessageAsync("Random exploration failed", "The random exploration failed with error:\r\n\r\n" + exception.Message, MessageDialogStyle.Affirmative);
+                }
+                else
+                {
+                    log("Step Fault Model - Random exploration stopped");
+                } 
                 this.Close();
             }
         }
@@ -115,7 +135,18 @@ namespace FM4CC.FaultModels.Step.GUI
             }
             else
             {
-                log("Step Fault Model -  Worst-case Search aborted");
+                Exception exception = (this.faultModel.WorstCaseWorker as WorstCaseScenarioWorker).Exception;
+                
+                if (exception != null)
+                {
+                    log("Step Fault Model - Worst-case Search failed to run");
+                    await this.ShowMessageAsync("Worst-case Search failed", "The worst-case search failed with error:\r\n\r\n" + exception.Message, MessageDialogStyle.Affirmative);
+                }
+                else
+                {
+                    log("Step Fault Model - Worst-case Search stopped");
+                }
+                this.Close();
             }
         }
 
@@ -155,7 +186,7 @@ namespace FM4CC.FaultModels.Step.GUI
 
                 foreach (HeatPoint hp in simpleSources[i].HeatPoints)
                 {
-                    _explorationResults.Add(new DataGridHeatPoint(hp as StepHeatPoint, baseUnit, simpleSources[i].Name));
+                    _explorationResults.Add(new DataGridHeatPoint(hp as StepHeatPoint, baseUnit, Convert.ToDouble(val.FromValue), Convert.ToDouble(val.ToValue), simpleSources[i].Name));
                 }
 
                 _explorationResults.Sort(CompareIntensities);
@@ -361,6 +392,7 @@ namespace FM4CC.FaultModels.Step.GUI
                 WorstCaseScenarioWorker singleStateWorker = (WorstCaseScenarioWorker)faultModel.WorstCaseWorker;
                 singleStateWorker.TestCases = testCases;
                 singleStateWorker.RunWorkerCompleted += WorstCaseSearchWorker_RunWorkerCompleted;
+                singleStateWorker.Logger = log;
 
                 IList<DataGridHeatPoint> worstHeatPoints = new List<DataGridHeatPoint>();
 
@@ -395,6 +427,7 @@ namespace FM4CC.FaultModels.Step.GUI
                 singleStateWorker.RunWorkerCompleted += WorstCaseSearchWorker_RunWorkerCompleted;
                 singleStateWorker.SelectedRegions = selectedRegions;
                 singleStateWorker.TestCases = testCases;
+                singleStateWorker.Logger = log;
 
                 progressController = await this.ShowProgressAsync("Performing worst-case search", "Estimated progress:", true);
 

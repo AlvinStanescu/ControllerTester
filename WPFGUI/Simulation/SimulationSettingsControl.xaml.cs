@@ -167,11 +167,27 @@ namespace FM4CC.WPFGUI.Simulation
                 return;
             }
 
+            if (String.IsNullOrWhiteSpace(this.DesiredValueNameTextBox.Text))
+            {
+                MessageBox.Show("Please specify the name of the desired variable.", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (String.IsNullOrWhiteSpace(this.ActualValueNameTextBox.Text))
+            {
+                MessageBox.Show("Please specify the name of the actual variable.", "Invalid setting", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             SimulationParameter desired = new SimulationParameter(this.DesiredValueNameTextBox.Text, SimulationParameterType.Desired, new decimal(desiredFrom), new decimal(desiredTo));
             SimulationParameter actual = new SimulationParameter(this.ActualValueNameTextBox.Text, SimulationParameterType.Actual, new decimal(actualFrom), new decimal(actualTo));
-            ModelSimulationSettings = new SimulationSettings(modelSimulationTime, desiredValueReachedTime, smoothnessDiff, responsivenessClose, desired, actual);
+            SimulationParameter disturbance = new SimulationParameter("placeholder", SimulationParameterType.Disturbance, new decimal(0), new decimal(0));
 
-            progressController = await containingWindow.ShowProgressAsync("Please wait...", "Model simulation running");
+            ModelRegressionSettings regressionSettings = new ModelRegressionSettings() { ModelQuality = (double)1.00, RefinedCandidatePoints = (int)3, RefinementPoints = (int)16, ValidationSetSize = (int)64, TrainingSetSizeEqualDistance = (int)256, TrainingSetSizeRandom = (int)64};
+
+            ModelSimulationSettings = new SimulationSettings(modelSimulationTime, desiredValueReachedTime, smoothnessDiff, responsivenessClose, desired, actual, disturbance, regressionSettings);
+
+            progressController = await containingWindow.ShowProgressAsync("Please wait...", "Model compilation and simulation running");
             progressController.SetIndeterminate();
             
             TestFunctionality();
@@ -188,8 +204,11 @@ namespace FM4CC.WPFGUI.Simulation
         private async void simulationWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             string message = (string)e.Result;
-            
-            await progressController.CloseAsync();
+
+            if (progressController.IsOpen)
+            {
+                await progressController.CloseAsync();
+            }
 
             if (message.ToLower().Contains("success"))
             {
@@ -200,6 +219,46 @@ namespace FM4CC.WPFGUI.Simulation
             {
                 await containingWindow.ShowMessageAsync("Invalid setting", "The model simulation failed with error:\r\n\r\n" + message, MessageDialogStyle.Affirmative);
             }
+        }
+
+        private void ModelQualityNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The model quality represents the tolerated error of the points computed using the regressed model, compared to the worst case objective function value in the training set.";
+        }
+
+        private void RefinedCandidatePointsNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The number of worst case points, found while computing the training set, to be refined prior to computing the regressed model.";
+        }
+
+        private void RefinementSizeNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The number of points computed around each of the worst-case candidate points.";
+        }
+
+        private void TrainingSetPointsNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The number of equally-spaced points to be computed for the training set. Will get rounded to the next perfect square.";
+        }
+
+        private void TrainingSetRandomPointsNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The number of random points to be computed for the training set.";
+        }
+
+        private void ValidationSetRandomPointsNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The number of random points to be computed for the validation set.";
+        }
+
+        private void DisturbanceValueToNumUpDown_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The worst case amplitude of the disturbance.";
+        }
+        
+        private void DisturbanceValueNameTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.DescriptionTextBlock.Text = "The name of the variable imported to the workspace representing the disturbance value. The disturbance variable can have values in the interval [DisturbanceValueFrom, DisturbanceValueTo].";
         }
     }
 }

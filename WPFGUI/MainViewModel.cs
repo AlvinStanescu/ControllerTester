@@ -13,6 +13,8 @@ using FM4CC.WPFGUI.Workflow.OpenSave;
 using FM4CC.WPFGUI.Workflow.Workers;
 using log4net;
 using log4net.Appender;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -46,9 +48,9 @@ namespace FM4CC.WPFGUI
         private IList<ExecutionEnvironment> selectedExecutionEngines;
         private IDictionary<string, ExecutionEnvironment> allExecutionEngines;
 
-        private ProgressWindow progressWindow;
+        private ProgressDialogController progressController;
         private readonly ILog log = LogManager.GetLogger("ControllerTester");
-
+        
         internal MainViewModel(MainWindow mainWindow)
         {
             // configure logging functionality
@@ -72,13 +74,11 @@ namespace FM4CC.WPFGUI
 
             // load the fault model and execution engine assemblies
             LoadAssemblies();
-            LoadExecutionEngines(new List<string>() {Directory.GetCurrentDirectory()});
             connectedControl = new Dictionary<ListViewItem, UserControl>();
             connectedListViewItem = new Dictionary<FaultModel, ListViewItem>();
 
             mainWindow.Closing += mainWindow_Closing;
             mainWindow.Loaded += mainWindow_Loaded;
-            selectedExecutionEngines = new List<ExecutionEnvironment>();
             
         }
 
@@ -90,6 +90,8 @@ namespace FM4CC.WPFGUI
                 ShowSettingsWindow(false);
                 appConfiguration = FMTesterConfiguration.LoadSettings(Constants.SettingsFilePath);
             }
+            LoadExecutionEngines(new List<string>() { Directory.GetCurrentDirectory() });
+            selectedExecutionEngines = new List<ExecutionEnvironment>();
 
             if (Application.Current.Properties["InputFileName"] != null)
             {
@@ -162,6 +164,7 @@ namespace FM4CC.WPFGUI
             mainWindow.TestCaseGenerationGroup.IsEnabled = true;
             mainWindow.CloseProjectMenuItem.IsEnabled = true;
             mainWindow.SaveProjectMenuItem.IsEnabled = true;
+            mainWindow.SaveProjectAsMenuItem.IsEnabled = true;
         }
 
         /// <summary>
@@ -174,10 +177,11 @@ namespace FM4CC.WPFGUI
             // read execution environment assemblies from XML or directory
             // load execution environment assemblies
             allExecutionEngines = new Dictionary<string, ExecutionEnvironment>();
-            ExecutionEnvironment e = new MatlabExecutionEngine();
+            ExecutionEnvironment e = new MatlabExecutionEngine(appConfiguration.MatLABFolderPath);
             allExecutionEngines.Add(e.Name.ToLower(), e);
 
         }
+
         /// <summary>
         /// Loads all fault models present in the path for a specific execution environment (e.g. MATLAB)
         /// </summary>
@@ -261,7 +265,7 @@ namespace FM4CC.WPFGUI
             foreach (FaultModel fm in faultModels.Values)
             {
                 string faultModelName = fm.ToString();
-                object[] args = {fm.FaultModelConfiguration};
+                object[] args = {fm.FaultModelConfiguration, currentTestProject.ModelSimulationSettings};
                                 
                 UserControl faultModelConfiguration = (UserControl)Activator.CreateInstance(faultModelAssemblies[faultModelName].GetType("FM4CC.FaultModels." + faultModelName.Substring(0, faultModelName.IndexOf("FaultModel")) + ".GUI.ConfigurationControl"), args);
                                 
@@ -302,7 +306,7 @@ namespace FM4CC.WPFGUI
         internal void PerformGeneration()
         {
             ListViewItem faultModelListViewItem = mainWindow.FaultModelsListView.SelectedItem as ListViewItem;
-            IValidatable configurationTab = connectedControl[faultModelListViewItem] as IValidatable;
+            IConfigurationControl configurationTab = connectedControl[faultModelListViewItem] as IConfigurationControl;
             FaultModel fm = faultModels[faultModelListViewItem.Uid];
 
             if (configurationTab.Validate())
@@ -325,14 +329,21 @@ namespace FM4CC.WPFGUI
                 Window testGenerationWindow = (Window)Activator.CreateInstance(faultModelAssemblies[fmName].GetType("FM4CC.FaultModels." + fmName.Substring(0, fmName.IndexOf("FaultModel")) + ".GUI.TestGenerationWindow"), args);
                 testGenerationWindow.Owner = this.mainWindow;
                 testGenerationWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                
-                if ((bool)testGenerationWindow.ShowDialog())
+
+                try
                 {
-                    mainWindow.TestCaseExecutionGroup.IsEnabled = true;
-                    mainWindow.TestCaseInfoGroup.IsEnabled = true;
-                    mainWindow.ComboBoxTestCases.ItemsSource = CollectionViewSource.GetDefaultView(currentTestProject.TestCases);
-                    mainWindow.ComboBoxTestCases.SelectedItem = currentTestProject.TestCases[0];
-                    mainWindow.ClearButton.IsEnabled = true;
+                    if ((bool)testGenerationWindow.ShowDialog())
+                    {
+                        mainWindow.TestCaseExecutionGroup.IsEnabled = true;
+                        mainWindow.TestCaseInfoGroup.IsEnabled = true;
+                        mainWindow.ComboBoxTestCases.ItemsSource = CollectionViewSource.GetDefaultView(currentTestProject.TestCases);
+                        mainWindow.ComboBoxTestCases.SelectedItem = currentTestProject.TestCases[0];
+                        mainWindow.ClearButton.IsEnabled = true;
+                    }
+                }
+                catch (FM4CCException e)
+                {
+                    MessageBox.Show("Failed to perform generation for fault model " + fm.Name + ", an error was reported by the execution environment" + e.Message, "Execution environment error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -346,26 +357,36 @@ namespace FM4CC.WPFGUI
 
         internal void ShowSaveProject()
         {
-            bool runSave = true;
             if (currentTestProject != null)
             {
                 foreach (FaultModel fm in faultModels.Values)
                 {
-                    IValidatable configurationTab = connectedControl[connectedListViewItem[fm]] as IValidatable;
-                    if (!configurationTab.Validate())
-                    {
-                        MessageBox.Show("Could not save the project, please check the fault model configuration for " + fm.Name, "Configuration error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        runSave = false;
-                        break;
-                    }                 
+                    IConfigurationControl configurationTab = connectedControl[connectedListViewItem[fm]] as IConfigurationControl;
+                    configurationTab.Save();
                 }
+                
+                OpenSaveHandler.SaveProject(currentTestProject);
+                mainWindow.Title = "Controller Tester - " + currentTestProject.Name;
 
-                if (runSave)
-                {
-                    OpenSaveHandler.SaveProject(currentTestProject);
-                }
             }
         }
+
+        internal void ShowSaveProjectAs()
+        {
+            if (currentTestProject != null)
+            {
+                foreach (FaultModel fm in faultModels.Values)
+                {
+                    IConfigurationControl configurationTab = connectedControl[connectedListViewItem[fm]] as IConfigurationControl;
+                    configurationTab.Save();
+                }
+
+                OpenSaveHandler.SaveProject(currentTestProject, true);
+                mainWindow.Title = "Controller Tester - " + currentTestProject.Name;
+
+            }
+        }
+
 
         internal void ShowOpenProject(string path = null)
         {
@@ -443,11 +464,12 @@ namespace FM4CC.WPFGUI
 
         internal void CloseProject()
         {
-            mainWindow.Title = "Fault Model Tester";
+            mainWindow.Title = "Controller Tester";
 
             mainWindow.CloseProjectMenuItem.IsEnabled = false;
             mainWindow.SaveProjectMenuItem.IsEnabled = false;
-            
+            mainWindow.SaveProjectAsMenuItem.IsEnabled = false;
+
             if (mainWindow.ConfigurationStackPanel.Children.Count > 1)
             {
                 mainWindow.ConfigurationStackPanel.Children.RemoveAt(1);
@@ -457,7 +479,7 @@ namespace FM4CC.WPFGUI
 
             mainWindow.ConfigurationPlaceholderTextBlock.Visibility = Visibility.Visible;
             mainWindow.FaultModelPlaceholderTextBlock.Visibility = Visibility.Visible;
-
+            mainWindow.ComboBoxTestCases.ItemsSource = null;
             // only a single engine per test project is supported currently
             selectedExecutionEngines.Clear();
 
@@ -480,12 +502,12 @@ namespace FM4CC.WPFGUI
             mainWindow.ClearButton.IsEnabled = false;
         }
 
-        internal void ExecuteTestCase(object selected)
+        internal async void ExecuteTestCase(object selected)
         {
             FaultModelTesterTestCase selectedTestCase = selected as FaultModelTesterTestCase;
             FaultModel fm = faultModels[selectedTestCase.FaultModel];
 
-            IValidatable configurationTab = connectedControl[connectedListViewItem[fm]] as IValidatable;
+            IConfigurationControl configurationTab = connectedControl[connectedListViewItem[fm]] as IConfigurationControl;
             if (!configurationTab.Validate())
             {
                 MessageBox.Show("Failed to perform simulation for fault model " + fm.Name, "Configuration error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -496,18 +518,23 @@ namespace FM4CC.WPFGUI
             fm.SimulationSettings = currentTestProject.ModelSimulationSettings;
 
             TestCaseExecutionWorker worker = new TestCaseExecutionWorker(fm);
+            
             worker.RunWorkerCompleted += testCaseExecutionWorker_RunWorkerCompleted;
-            progressWindow = new ProgressWindow("Running the test case", "Please wait while the test case is run...");
-            worker.ProgressChanged += progressWindow.ProgressChanged;
+            
+            progressController = await (mainWindow as MetroWindow).ShowProgressAsync("Please wait...", "Model simulation running");
+            progressController.SetIndeterminate();
+
             worker.RunWorkerAsync(selectedTestCase);
-            progressWindow.ShowDialog(this.mainWindow);
 
             
         }
 
-        private void testCaseExecutionWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private async void testCaseExecutionWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            progressWindow.Close();
+            if (progressController.IsOpen)
+            {
+                await progressController.CloseAsync();
+            }
         }
 
         internal void ChangedSelectedTestCase(SelectionChangedEventArgs e)

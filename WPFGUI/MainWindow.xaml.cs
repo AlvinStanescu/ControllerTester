@@ -125,6 +125,11 @@ namespace FM4CC.WPFGUI
             viewModel.ShowSaveProject();
         }
 
+        private void SaveTestProjectAs_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ShowSaveProjectAs();
+        }
+
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             viewModel.ShowSettingsWindow();
@@ -189,6 +194,20 @@ namespace FM4CC.WPFGUI
         private void About_Click(object sender, RoutedEventArgs e)
         {
             new AboutBox(this).ShowDialog(); 
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBoxResult question = MessageBox.Show("Do you want to save the current project upon exiting?", "Controller Tester", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            
+            if (question == MessageBoxResult.Yes)
+            {
+                viewModel.ShowSaveProject();
+            }
+            else if (question == MessageBoxResult.Cancel)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }

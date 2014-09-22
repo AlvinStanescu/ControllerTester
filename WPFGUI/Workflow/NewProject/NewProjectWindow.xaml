@@ -4,7 +4,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:FM4CC.WPFGUI"
         Style="{DynamicResource ControllerTesterStyle}" 
-        Title="New test project" Height="600" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" MinHeight="250" MinWidth="300" Closing="MetroWindow_Closing">
+        Title="New test project" Height="540" Width="800" WindowStartupLocation="CenterOwner" MinHeight="250" MinWidth="300" Closing="MetroWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="220*"></RowDefinition>

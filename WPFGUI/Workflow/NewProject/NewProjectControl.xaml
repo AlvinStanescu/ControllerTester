@@ -17,10 +17,9 @@
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Label Margin="0 0 0 00" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">Project Name</Label>
-            <TextBox x:Name="projectNameTextBox" Width="150" Margin="0 0 0 0" Grid.Column="1" Grid.Row="0" Height="15"/>
+            <TextBox x:Name="projectNameTextBox" Margin="0 0 0 0" Grid.Column="1" Grid.Row="0" Height="15"/>
             <Label Margin="0 0 0 0" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">Environment</Label>
             <ComboBox x:Name="environmentComboBox"
-                      Width="150"
                       Height="15"
                       Margin="0 0 0 0" 
                       ItemsSource="{Binding Path=ExecutionEnvironments}"
@@ -30,7 +29,6 @@
                       SelectedValue="{Binding Path=SelectedEnvironment}" />
             <Label Margin="0 0 0 0" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">SUT Type</Label>
             <ComboBox x:Name="environmentTypeComboBox"
-                      Width="150" 
                       Height="15"
                       Margin="0 0 0 0" 
                       ItemsSource="{Binding Path=ExecutionEnvironmentTypes}"

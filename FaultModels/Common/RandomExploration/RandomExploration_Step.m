@@ -1,4 +1,4 @@
-%  StepRandomExplorationExecution
+%  RandomExploration_Step
 %
 %  Executes the model with the step fault model as a basis in an
 %  explorative manner, attempting to provide a view of the input space
@@ -14,6 +14,7 @@ try
     % configure the static model configuration parameters and load the
     % model into the system memory
     load_system(CT_ModelFile);
+    CT_CheckCorrectOutput(CT_ActualVariableName);
     run(CT_ModelConfigurationFile);
     % double the model simulation time set in the GUI because we need two values for the step fault model
     simulationTime = CT_ModelSimulationTime * 2;
@@ -22,18 +23,30 @@ try
     % retrieve the model simulation step, as it might have been changed by
     % the configuration script
     CT_ModelTimeStep = CT_GetSimulationTimeStep();
-    CT_SimulationSteps=int64(simulationTime/CT_ModelTimeStep);
+    CT_SimulationSteps=simulationTime/CT_ModelTimeStep;
     
     % compute the total number of regions
     CT_TotalRegions = CT_Regions * CT_Regions;
     
+    % build the model if needed
+    if (CT_ModelConfigurationFile)
+        evalin('base', strcat('run(''',CT_ModelConfigurationFile,''')'));
+    end
+    assignin('base', CT_DesiredVariableName, CT_GenerateStepSignal(CT_SimulationSteps, CT_ModelTimeStep, 0, 0, CT_ModelSimulationTime));
+    assignin('base', CT_DisturbanceVariableName, CT_GenerateConstantSignal(1, CT_SimulationSteps*CT_ModelTimeStep, 0));
+    accelbuild(gcs);
+        
     % pre-allocate space
     ObjectiveFunctionValues = zeros(CT_TotalRegions, CT_PointsPerRegion, 7);    
     DesiredValues = zeros(CT_TotalRegions, CT_PointsPerRegion, 2);
         
     parfor RegionCnt = 1 : CT_TotalRegions
         evalin('base', strcat('run(''',CT_ModelConfigurationFile,''')'));
-
+        if (~strcmp(which(gcs), CT_ModelFile))
+            load_system(CT_ModelFile);
+            CT_SetSimulationTime(simulationTime);
+        end
+	
         RegionXIndex = floor((RegionCnt-1) / CT_Regions);
         RegionYIndex = floor(mod(RegionCnt-1, CT_Regions));
         
@@ -56,13 +69,13 @@ try
             % save the generated point p
             CurrentDesiredValues(PointCnt, :) = [InitialDesiredValue, DesiredValue];
             
-            CurrentObjectiveFunctionValues(PointCnt, :) = SimulateModelStep(CT_ModelFile, InitialDesiredValue, DesiredValue, CT_ActualValueRangeStart, CT_ActualValueRangeEnd, 0, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile);
+            CurrentObjectiveFunctionValues(PointCnt, :) = SimulateModelStep(CT_ModelFile, InitialDesiredValue, DesiredValue, CT_ActualValueRangeStart, CT_ActualValueRangeEnd, 0, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_DisturbanceVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile);
             
             % generate a new point p
             if CT_UseAdaptiveRandomSearch == 0
-                [InitialDesiredValue, DesiredValue] = RandomExploration_Step_RandomSearchGenerateNewPoint(CurrentDesiredValues, PointCnt, RegionXDesiredValueRangeStart, RegionXDesiredValueRangeEnd, RegionYDesiredValueRangeStart, RegionYDesiredValueRangeEnd);
+                [InitialDesiredValue, DesiredValue] = RandomExploration_GenerateNew2DPoint(CurrentDesiredValues, PointCnt, RegionXDesiredValueRangeStart, RegionXDesiredValueRangeEnd, RegionYDesiredValueRangeStart, RegionYDesiredValueRangeEnd);
             else
-                [InitialDesiredValue, DesiredValue] = RandomExploration_Step_AdaptiveRandomSearchGenerateNewPoint(CurrentDesiredValues, PointCnt, RegionXDesiredValueRangeStart, RegionXDesiredValueRangeEnd, RegionYDesiredValueRangeStart, RegionYDesiredValueRangeEnd);
+                [InitialDesiredValue, DesiredValue] = RandomExploration_GenerateNew2DPointAdaptive(CurrentDesiredValues, PointCnt, RegionXDesiredValueRangeStart, RegionXDesiredValueRangeEnd, RegionYDesiredValueRangeStart, RegionYDesiredValueRangeEnd);
             end
         end
         
@@ -72,7 +85,18 @@ try
         ObjectiveFunctionValues(RegionCnt, :, :) = CurrentObjectiveFunctionValues(:, :);
     end  
     
-    RandomExploration_Step_SaveResults(DesiredValues, ObjectiveFunctionValues, CT_TotalRegions, CT_PointsPerRegion, CT_TempPath);
+    LimitDesiredValues = [CT_DesiredValueRangeStart, CT_DesiredValueRangeStart; CT_DesiredValueRangeStart, CT_DesiredValueRangeEnd; CT_DesiredValueRangeEnd, CT_DesiredValueRangeStart; CT_DesiredValueRangeEnd, CT_DesiredValueRangeEnd];
+    LimitObjectiveFunctionValues = zeros(4, 7);
+    
+    % temporary variables to avoid communication overhead in parfor loop
+    LimitDesiredValuesInit = LimitDesiredValues(:,1);
+    LimitDesiredValuesFinal = LimitDesiredValues(:,2);
+    
+    for LimitTestCases = 1 : 4
+        LimitObjectiveFunctionValues(LimitTestCases, :) = SimulateModelStep(CT_ModelFile, LimitDesiredValuesInit(LimitTestCases,1), LimitDesiredValuesFinal(LimitTestCases,1), CT_ActualValueRangeStart, CT_ActualValueRangeEnd, 0, CT_SimulationSteps, CT_ModelTimeStep, CT_DesiredVariableName, CT_ActualVariableName, CT_DisturbanceVariableName, CT_TimeStable, CT_TimeStable, CT_SmoothnessStartDifference, CT_ResponsivenessClose, CT_AccelerationDisabled, CT_ModelConfigurationFile);         
+    end  
+    
+    RandomExploration_Step_SaveResults(DesiredValues, ObjectiveFunctionValues, LimitDesiredValues, LimitObjectiveFunctionValues, CT_TotalRegions, CT_PointsPerRegion, CT_TempPath);
 
     display('Successful termination of the random exploration process.');
 catch e

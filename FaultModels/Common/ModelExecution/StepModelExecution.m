@@ -6,15 +6,17 @@ try
     addpath(strcat(CT_ScriptsPath, '/Util'));
     % configure the static model configuration parameters and load the
     % model into the system memory
-    run(CT_ModelConfigurationFile);
     load_system(CT_ModelFile);
+    CT_CheckCorrectOutput(CT_ActualVariableName);
+    run(CT_ModelConfigurationFile);
+
     % double the model simulation time set in the GUI because we need two values for the step fault model
     simulationTime = CT_ModelSimulationTime * 2;
     CT_SetSimulationTime(simulationTime);
     % retrieve the model simulation step, as it might have been changed by
     % the configuration script
     CT_ModelTimeStep = CT_GetSimulationTimeStep();
-    CT_SimulationSteps=int64(simulationTime/CT_ModelTimeStep);
+    CT_SimulationSteps=simulationTime/CT_ModelTimeStep;
     
     % pre-allocate space
 	ObjectiveFunctionValues = zeros(7,1);
@@ -23,8 +25,8 @@ try
     % with the objective function computation
     tic;
     % generate the time for the desired value  
-    assignin('base', CT_DesiredVariableName, CT_GenerateStepDesiredValue(CT_SimulationSteps, CT_ModelTimeStep, CT_InitialDesiredValue, CT_DesiredValue));
-            
+    assignin('base', CT_DesiredVariableName, CT_GenerateStepSignal(CT_SimulationSteps, CT_ModelTimeStep, CT_InitialDesiredValue, CT_DesiredValue, CT_ModelSimulationTime));
+    assignin('base', CT_DisturbanceVariableName, CT_GenerateConstantSignal(1, CT_SimulationSteps*CT_ModelTimeStep, 0));    
     % run the simulation in accelerated mode
     if (CT_AccelerationDisabled)
         simOut = sim(CT_ModelFile, 'SaveOutput','on');
@@ -34,13 +36,18 @@ try
 
     actualValue = simOut.get(CT_ActualVariableName);
     
+    % get the starting index for stability, precision and steadiness
+    indexStableStart = CT_GetIndexForTimeStep(actualValue.time, (CT_SimulationSteps/2+1)*CT_ModelTimeStep + CT_TimeStable);
+    % get the starting index for smoothness and responsiveness
+    indexMidStart = CT_GetIndexForTimeStep(actualValue.time, (CT_SimulationSteps/2+1)*CT_ModelTimeStep);
+    
     % calculate the objective functions
-    ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue.signals.values, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
-    ObjectiveFunctionValues(2) = ObjectiveFunction_Precision(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
-    ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue.signals.values, CT_DesiredValue, CT_SimulationSteps/2 + 1, CT_SmoothnessStartDifference);
-    ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue.signals.values, CT_DesiredValue, CT_ModelTimeStep, CT_SimulationSteps/2 + 1, CT_ResponsivenessClose);
-    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Steadiness(actualValue.signals.values, CT_ModelTimeStep, CT_ModelSimulationTime + CT_TimeStable);
-    ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue.signals.values, CT_ActualValueRangeStart, CT_ActualValueRangeEnd);
+    ObjectiveFunctionValues(1) = ObjectiveFunction_Stability(actualValue, indexStableStart);
+    ObjectiveFunctionValues(2) = ObjectiveFunction_Precision(actualValue, CT_DesiredValue, indexStableStart);
+    ObjectiveFunctionValues(3) = ObjectiveFunction_Smoothness(actualValue, CT_DesiredValue, indexMidStart, CT_SmoothnessStartDifference);
+    ObjectiveFunctionValues(4) = ObjectiveFunction_Responsiveness(actualValue, CT_DesiredValue, indexMidStart, CT_ResponsivenessClose);
+    [ObjectiveFunctionValues(5), ObjectiveFunctionValues(6)] = ObjectiveFunction_Steadiness(actualValue, indexStableStart);
+    ObjectiveFunctionValues(7) = ObjectiveFunction_PhysicalRange(actualValue, CT_ActualValueRangeStart, CT_ActualValueRangeEnd);
 
     % stop the timer
     duration = toc;
@@ -48,7 +55,23 @@ try
     display('Successful execution of the model');
     display(strcat('runningTime=', num2str(duration)));
     % plot the result
-    eval(strcat('plot(', CT_DesiredVariableName,'.time,', CT_DesiredVariableName, '.signals.values,', CT_DesiredVariableName, '.time, actualValue.signals.values)'));
+    str = {'Objective function values:'};
+    str = [str, strcat('Stability: ', num2str(ObjectiveFunctionValues(1)))];
+    str = [str, strcat('Precision: ', num2str(ObjectiveFunctionValues(2)))];
+    str = [str, strcat('Smoothness: ', num2str(ObjectiveFunctionValues(3)))];
+    str = [str, strcat('Responsiveness: ', num2str(ObjectiveFunctionValues(4)))];
+    str = [str, strcat('Steadiness: ', num2str(ObjectiveFunctionValues(5)))];
+    str = [str, strcat('Physical range exceeded: ', num2str(ObjectiveFunctionValues(7)))];
+
+    % plot the result
+    eval(strcat('InterpolatedDesiredValues = interp1(',CT_DesiredVariableName,'.time,',CT_DesiredVariableName,'.signals.values, actualValue.time);'));
+    plot(actualValue.time, InterpolatedDesiredValues,actualValue.time, actualValue.signals.values);
+
+    annotation('textbox', [0, 0.5, 0, 0], 'string', str);
+    
+    legend('Desired Value','Actual Value');
+
+    
 catch e
     display('Error during model execution');
     display(getReport(e));

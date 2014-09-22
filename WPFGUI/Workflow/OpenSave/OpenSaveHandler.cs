@@ -15,37 +15,47 @@ namespace FM4CC.WPFGUI.Workflow.OpenSave
     static class OpenSaveHandler
     {
         public enum OpenProjectStatus { Opened, Canceled, Invalid };
-        public static void SaveProject(TestProject testProject)
+        public static void SaveProject(TestProject testProject, bool showDialogAlways = false)
         {
             System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             saveFileDialog.Title = "Save test project";
             saveFileDialog.RestoreDirectory = true;
             saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-            saveFileDialog.Filter = "Fault Model Tester Projects (*.fmpx) | *.fmpx";
+            saveFileDialog.Filter = "Controller Tester Projects (*.fmpx) | *.fmpx";
             saveFileDialog.FileName = testProject.Name;
 
-            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (showDialogAlways == true || testProject.Path == null)
             {
-                string fileName = null;
-                
-                if (!saveFileDialog.FileName.Contains(".fmpx"))
+                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    fileName = saveFileDialog.FileName + ".fmpx";
+                    if (!saveFileDialog.FileName.Contains(".fmpx"))
+                    {
+                        testProject.Name = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
+                        testProject.Path = saveFileDialog.FileName + ".fmpx";
+                    }
+                    else
+                    {
+                        testProject.Name = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
+                        testProject.Path = saveFileDialog.FileName;
+                    }
                 }
                 else
                 {
-                    fileName = saveFileDialog.FileName + ".fmpx";
+                    return;
                 }
+            }
 
-                FileStream f = File.Create(saveFileDialog.FileName);
+            if (testProject.Path != null)
+            {
+                FileStream f = File.Create(testProject.Path);
 
                 var listOfFaultModelAssemblies = (from lAssembly in AppDomain.CurrentDomain.GetAssemblies()
                                                   where lAssembly.FullName.Contains("FaultModel")
                                                   select lAssembly).ToArray();
                 var extraTypes = (from lAssembly in listOfFaultModelAssemblies
-                                                      from lType in lAssembly.GetTypes()
-                                                      where lType.IsSubclassOf(typeof(FM4CC.Environment.FaultModelConfiguration))
-                                                      select lType).ToArray();
+                                  from lType in lAssembly.GetTypes()
+                                  where lType.IsSubclassOf(typeof(FM4CC.Environment.FaultModelConfiguration))
+                                  select lType).ToArray();
                 var extraTypes2 = (from lAssembly in listOfFaultModelAssemblies
                                    from lType in lAssembly.GetTypes()
                                    where lType.IsSubclassOf(typeof(FM4CC.TestCase.FaultModelTesterTestCase))
@@ -54,7 +64,7 @@ namespace FM4CC.WPFGUI.Workflow.OpenSave
 
                 XmlWriter writer = XmlWriter.Create(f);
                 xsSubmit.Serialize(writer, testProject);
-                
+
                 f.Close();
             }
         }
@@ -81,6 +91,7 @@ namespace FM4CC.WPFGUI.Workflow.OpenSave
             if (xsSubmit.CanDeserialize(reader))
             {
                 testProject = xsSubmit.Deserialize(reader) as TestProject;
+                testProject.Path = path;
                 f.Close();
 
                 return OpenProjectStatus.Opened;
@@ -100,7 +111,7 @@ namespace FM4CC.WPFGUI.Workflow.OpenSave
                 openFileDialog.Title = "Open test project";
                 openFileDialog.RestoreDirectory = true;
                 openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-                openFileDialog.Filter = "Fault Model Tester Projects (*.fmpx) | *.fmpx";
+                openFileDialog.Filter = "Controller Tester Projects (*.fmpx) | *.fmpx";
 
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {

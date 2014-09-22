@@ -1,5 +1,6 @@
 ﻿using FM4CC.Util;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,8 @@ namespace FM4CC.FaultModels.Step.GUI
     public partial class RunWindow : MetroWindow
     {
         private StepFaultModel faultModel;
-        private ProgressWindow progressWindow;
         private Action<string> log;
+        private ProgressDialogController progressController;
 
         public RunWindow(StepFaultModel faultModel, Action<string> logFunction)
         {
@@ -36,26 +37,42 @@ namespace FM4CC.FaultModels.Step.GUI
             this.EnableDWMDropShadow = true;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             TestRunWorker testRunWorker = (TestRunWorker)faultModel.TestRunWorker;
             testRunWorker.InitialDesired = (double)InitialValueNumUpDown.Value;
             testRunWorker.FinalDesired = (double)FinalValueNumUpDown.Value;
             testRunWorker.RunWorkerCompleted += TestRunWorker_RunWorkerCompleted;
 
-            progressWindow = new ProgressWindow("Running the model, please wait...", " Estimated progress: ");
-            progressWindow.ShowCloseButton = false;
-            testRunWorker.ProgressChanged += progressWindow.ProgressChanged;
+            progressController = await this.ShowProgressAsync("Please wait...", "Model simulation running");
+            progressController.SetIndeterminate();
             testRunWorker.RunWorkerAsync(faultModel);
-            progressWindow.ShowDialog(this);
 
             log("Step Fault Model - Ran model with initial desired value " + testRunWorker.InitialDesired + " and final desired value " + testRunWorker.FinalDesired);
 
         }
 
-        private void TestRunWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private async void TestRunWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            progressWindow.Close();
+            if (progressController.IsOpen)
+            {
+                await progressController.CloseAsync();
+            }
+
+            if (((bool)e.Result) == false)
+            {
+                Exception exception = (this.faultModel.TestRunWorker as TestRunWorker).Exception;
+                if (exception != null)
+                {
+                    log("Step Fault Model - Test case failed to run.");
+                    await this.ShowMessageAsync("Test case failed to run", "The test case run failed with error:\r\n\r\n" + exception.Message, MessageDialogStyle.Affirmative);
+                }
+                else
+                {
+                    log("Step Fault Model - Test case failed to run due to a problem with the execution environment.");
+                    await this.ShowMessageAsync("Test case failed to run", "Test case failed to run due to a problem with the execution environment.", MessageDialogStyle.Affirmative);
+                }
+            }
         }
     }
 }

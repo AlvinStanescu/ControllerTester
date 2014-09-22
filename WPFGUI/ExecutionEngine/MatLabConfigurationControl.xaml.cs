@@ -30,20 +30,20 @@ namespace FM4CC.WPFGUI.ExecutionEngine
 
         public bool Process(ExecutionInstance executionInstance)
         {
-            if ((!modelPathTextBox.Text.Contains(".mdl")  && !modelPathTextBox.Text.Contains(".slx")) || !File.Exists(this.modelPathTextBox.Text))
+            if ((!ModelPathTextBox.Text.Contains(".mdl")  && !ModelPathTextBox.Text.Contains(".slx")) || !File.Exists(this.ModelPathTextBox.Text))
             {
                 MessageBox.Show("Invalid model path, expected a MATLAB model file (.mdl, .slx)", "Model missing", MessageBoxButton.OK, MessageBoxImage.Stop);
                 return false;
             }
 
-            if (!modelSettingsPathTextBox.Text.Contains(".m") || !File.Exists(this.modelSettingsPathTextBox.Text))
+            if (!ModelSettingsPathTextBox.Text.Contains(".m") || !File.Exists(this.ModelSettingsPathTextBox.Text))
             {
                 MessageBox.Show("Invalid model settings path, expected a MATLAB script file (.m)", "Model settings missing", MessageBoxButton.OK, MessageBoxImage.Stop);
                 return false;
             }
             
-            executionInstance.PutValue("SUTSettingsPath", this.modelSettingsPathTextBox.Text);
-            executionInstance.PutValue("SUTPath", this.modelPathTextBox.Text);
+            executionInstance.PutValue("SUTSettingsPath", this.ModelSettingsPathTextBox.Text);
+            executionInstance.PutValue("SUTPath", this.ModelPathTextBox.Text);
 
             return true;
         }
@@ -52,14 +52,14 @@ namespace FM4CC.WPFGUI.ExecutionEngine
         {
             OpenFileDialog fbd = new OpenFileDialog();
             fbd.ShowDialog();
-            this.modelPathTextBox.Text = fbd.FileName;
+            this.ModelPathTextBox.Text = fbd.FileName;
         }
 
         private void ModelSettingsBrowse_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fbd = new OpenFileDialog();
             fbd.ShowDialog();
-            this.modelSettingsPathTextBox.Text = fbd.FileName;
+            this.ModelSettingsPathTextBox.Text = fbd.FileName;
         }
 
     }

@@ -1,10 +1,10 @@
-function [NoChange, StabilityProblemsSmell] = ObjectiveFunction_NoActualValueChange(ActualValueSignal, SimulationStepSize, DesiredValue, AllowedOscillation, tStableInitial, tChange)
+function [NoChange, StabilityProblemsSmell] = ObjectiveFunction_NoActualValueChange(ActualValueSignal, DesiredValue, AllowedOscillation, indexStableStart, indexChange)
     NoChange = true;
     len = length(ActualValueSignal);
     StabilityProblemsSmell = false;
 
-    MeanActualAfterNewDesiredValue = mean(ActualValueSignal(tChange/SimulationStepSize:len));
-    MeanActualAfterInitialDesiredValueStable = mean(ActualValueSignal(tStableInitial/SimulationStepSize:len));
+    MeanActualAfterNewDesiredValue = mean(ActualValueSignal(indexChange:len));
+    MeanActualAfterInitialDesiredValueStable = mean(ActualValueSignal(indexStableStart:len));
     
     if (abs(MeanActualAfterInitialDesiredValueStable - MeanActualAfterNewDesiredValue) > (MeanActualAfterInitialDesiredValueStable/10000))
         NoChange = false;

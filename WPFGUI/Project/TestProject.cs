@@ -26,6 +26,11 @@ namespace FM4CC.WPFGUI.Project
             this.TestCases = new List<FaultModelTesterTestCase>();
         }
 
+        internal string Path
+        {
+            get;
+            set;
+        }
         internal string Name
         {
             get
@@ -37,6 +42,7 @@ namespace FM4CC.WPFGUI.Project
                 Instance.Name = value;
             }
         }
+
         public ExecutionInstance Instance { get; set; }
 
         public SerializableDictionary<string, FaultModelConfiguration> FaultModelSettings { get; set; }

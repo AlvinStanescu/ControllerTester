@@ -1,4 +1,5 @@
 ﻿using FM4CC.Environment;
+using FM4CC.Simulation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +20,16 @@ namespace FM4CC.FaultModels.Step.GUI
     /// <summary>
     /// Interaction logic for ConfigurationControl.xaml
     /// </summary>
-    public partial class ConfigurationControl : UserControl, IValidatable
+    public partial class ConfigurationControl : UserControl, IConfigurationControl
     {
         StepFaultModelConfiguration configuration;
+        SimulationSettings simulationSettings;
 
-        public ConfigurationControl(FaultModelConfiguration configuration)
+        public ConfigurationControl(FaultModelConfiguration configuration, SimulationSettings simulationSettings)
         {
             InitializeComponent();
             LoadConfiguration(configuration);
+            this.simulationSettings = simulationSettings;
 
         }
 
@@ -44,12 +47,19 @@ namespace FM4CC.FaultModels.Step.GUI
                 return false;
             }
 
+            Save();
+
+            return true;
+        }
+
+        public void Save()
+        {
             configuration.SetValue("Regions", Convert.ToDouble(Math.Abs((double)this.NumberHeatMapRegionsNumUpDown.Value)));
             configuration.SetValue("PointsPerRegion", Convert.ToDouble(Math.Abs((double)this.PointsPerRegionNumUpDown.Value)));
-            
-            configuration.SetValue("UseAdaptiveRandomSearch", ((string)this.ExplorationAlgorithmComboBox.SelectedItem) == "AdaptiveRandomSearch"? true : false);
+
+            configuration.SetValue("UseAdaptiveRandomSearch", ((string)this.ExplorationAlgorithmComboBox.SelectedItem) == "AdaptiveRandomSearch" ? true : false);
             configuration.SetValue("OptimizationAlgorithm", this.LocalSeachAlgorithmComboBox.SelectedItem);
-            
+
             List<string> requirements = new List<string>();
 
             foreach (CheckBox cb in RequirementsStackPanel.Children)
@@ -57,8 +67,6 @@ namespace FM4CC.FaultModels.Step.GUI
                 if ((bool)cb.IsChecked) requirements.Add(cb.Content as string);
             }
             configuration.SetValue("Requirements", requirements, "complex");
-
-            return true;
         }
 
         private void LoadConfiguration(FaultModelConfiguration configuration)
@@ -68,7 +76,6 @@ namespace FM4CC.FaultModels.Step.GUI
             this.ExplorationAlgorithmComboBox.Items.Add("AdaptiveRandomSearch");
             this.ExplorationAlgorithmComboBox.Items.Add("RandomSearch");
 
-            this.LocalSeachAlgorithmComboBox.Items.Add("AcceleratedSimulatedAnnealing");
             this.LocalSeachAlgorithmComboBox.Items.Add("SimulatedAnnealing");
             this.LocalSeachAlgorithmComboBox.Items.Add("PatternSearch");
             this.LocalSeachAlgorithmComboBox.Items.Add("MultiStart");
@@ -103,6 +110,9 @@ namespace FM4CC.FaultModels.Step.GUI
                         break;
                     case "Steadiness":
                         SteadinessCheckBox.IsChecked = true;
+                        break;
+                    case "NormalizedSmoothness":
+                        NormalizedSmoothnessCheckBox.IsChecked = true;
                         break;
                     default:
                         break;

@@ -7,7 +7,7 @@ namespace FM4CC.ExecutionEngine.Process
 {
     public abstract class ApplicationProcess
     {
-        public abstract void StartProcess();
+        public abstract void StartProcess(string path);
         public abstract void EndProcess();
         public abstract void Kill();
     }
