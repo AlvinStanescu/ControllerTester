@@ -34,7 +34,7 @@ To be able to run the Controller Tester, the following software is required:
 * **MATLAB 2011a or newer**, with Simulink, the Parallelization Toolbox, Optimization Toolbox and Global Optimization Toolbox
 
 ## Usage 
-The Controller Tester can manage test projects and is able to use MATLAB Simulink to manually or automatically simulate controller models. Fault models are used as a basis for describing the problems which occurr when implementing a particular system. The currently used version of MATLAB depends on the version registered as an Automation Server. To change the registered COM Automation Server, type the following command into the MATLAB Console of your chosen version:
+The Controller Tester can manage test projects and is able to use MATLAB Simulink to manually or automatically simulate controller models. Fault models are used as a basis for describing the problems which occur when implementing a particular system. The currently used version of MATLAB depends on the version registered as an Automation Server. To change the registered COM Automation Server, type the following command into the MATLAB Console of your chosen version:
 
     !matlab -regserver
 
