@@ -63,4 +63,4 @@ The objective functions of each requirement are computed based on the controller
 * incompatible with pre-2.0 projects, please create a different project
 
 ## Further development
-The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
+The tool is designed to be easily extendable with plug-in Controller Fault Models. Other fault models will be provided in a future version.
